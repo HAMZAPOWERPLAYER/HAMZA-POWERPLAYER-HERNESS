@@ -11,21 +11,24 @@ project documentation; upstream Harness documentation still lives under
 - Upstream architecture is unchanged: all-plugin Cordis harness, workspace
   packages under `packages/<group>/<pkg>/`, license MIT with
   [third-party notices](THIRD_PARTY_NOTICES.md) preserved.
-- New HERNES capability toolkit lives in `packages/util/values` as 91 pure,
-  dependency-free modules (62 from Parts 1–2, 28 added by Part 3, plus the
-  pre-existing `partial-json`) with 93 spec files and 2135 executed assertions,
+- New HERNES capability toolkit lives in `packages/util/values` as 94 pure,
+  dependency-free modules (62 from Parts 1–2, 32 added by Part 3, plus the
+  pre-existing `partial-json`) with 96 spec files and 2225 executed assertions,
   all passing (Node-native TypeScript execution; see "Verification method").
 - Part 3 added the game-development layer: 18 game modules (design spec,
   architecture, movement, AI, UI, horror, assets, animation, mobile, testing,
   performance, vertical slice, multi-agent, knowledge base, Unity/Godot
-  diagnostics), then a coverage audit drove 10 more: `game-audio`,
+  diagnostics), then a coverage audit drove 10 more (`game-audio`,
   `game-design-tasks`, `game-lifecycle-audit`, `game-performance-triage`,
   `unity-reference-integrity`, `godot-scene-integrity`, `game-state-sync`,
-  `game-reliability`, `game-integration-review`, `game-quality-gate`; and 4
-  existing modules gained audited capabilities: `player-movement` (pause +
-  perspective presets), `game-testing` (check-kind taxonomy + visual-evidence
-  rule), `game-knowledge-base` (credential screening + source precedence),
-  `interaction-puzzle` (milestone completion now enforces its prerequisites).
+  `game-reliability`, `game-integration-review`, `game-quality-gate`), and a
+  final wave added 3 more (`game-request-router` for §2.2 task-mode routing,
+  `unity-codegen` and `godot-codegen` for §5.2/§6.2 skeleton generation) plus
+  further §4.4 lifecycle checks; 4 existing modules gained audited capabilities:
+  `player-movement` (pause + perspective presets), `game-testing` (check-kind
+  taxonomy + visual-evidence rule), `game-knowledge-base` (credential screening
+  + source precedence), `interaction-puzzle` (milestone completion now enforces
+  its prerequisites), and `mobile-optimization` (measured-vs-estimate tagging).
 - No upstream file was rewritten; `packages/util/values/src/index.ts` only
   gained additive re-exports (all 91 modules reachable from the barrel).
 
@@ -96,9 +99,9 @@ module is verified by:
    — exit 0.
 2. Executing every spec file with Node 26 native TypeScript execution against a
    minimal Vitest-compatible shim (`describe`/`it`/`expect`), reporting
-   2135 passed, 0 failed across 93 spec files (including the 99-test
+   2225 passed, 0 failed across 96 spec files (including the 99-test
    `partial-json.spec.ts` on the upgraded shim).
-3. Loading the built barrel (`lib/types/index.js`) to confirm all 373 exports
+3. Loading the built barrel (`lib/types/index.js`) to confirm all 379 exports
    and running 28 independent cross-module checks against that built artifact.
 
 ### Repository gates that run in this environment
