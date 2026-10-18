@@ -11,10 +11,10 @@ project documentation; upstream Harness documentation still lives under
 - Upstream architecture is unchanged: all-plugin Cordis harness, workspace
   packages under `packages/<group>/<pkg>/`, license MIT with
   [third-party notices](THIRD_PARTY_NOTICES.md) preserved.
-- New HERNES capability toolkit lives in `packages/util/values` as 102 pure,
-  dependency-free modules (94 from Parts 1–3, 8 added by Part 4) with 105 spec
-  files and 2339 executed assertions, all passing (Node-native TypeScript
-  execution; see "Verification method").
+- New HERNES capability toolkit lives in `packages/util/values` as 105 pure,
+  dependency-free modules (94 from Parts 1–3, 8 added by Part 4, 3 added by
+  Part 5) with 108 spec files and 2413 executed assertions, all passing
+  (Node-native TypeScript execution; see "Verification method").
 - Part 3 added the game-development layer: 18 game modules (design spec,
   architecture, movement, AI, UI, horror, assets, animation, mobile, testing,
   performance, vertical slice, multi-agent, knowledge base, Unity/Godot
@@ -99,7 +99,7 @@ module is verified by:
    — exit 0.
 2. Executing every spec file with Node 26 native TypeScript execution against a
    minimal Vitest-compatible shim (`describe`/`it`/`expect`), reporting
-   2339 passed, 0 failed across 105 spec files (including the 99-test
+   2413 passed, 0 failed across 108 spec files (including the 99-test
    `partial-json.spec.ts` on the upgraded shim).
 3. Loading the built barrel (`lib/types/index.js`) to confirm all 379 exports
    and running 28 independent cross-module checks against that built artifact.
@@ -184,6 +184,58 @@ New modules:
 - `idempotency` — operation idempotency classification and retry guidance.
 
 All 8 modules have spec files and are re-exported from `src/index.ts`.
+
+## Part 5: Evidence-based truth engine (added this session)
+
+Part 5 adds an evidence-based reliability layer on top of Parts 1–4 so HERNES
+can distinguish what it was asked to do from what it actually verified. All
+modules are pure TypeScript: they compute results from caller-supplied input,
+perform no I/O, hold no state, and never invoke a model provider directly.
+
+New modules:
+
+- `tool-result` — structured tool-result envelopes (Section 10). Records
+  whether execution was attempted, started, or completed; exit status;
+  timeout/cancellation; output truncation; tool errors; working-directory
+  context; mocked-vs-real flag; retry count; execution id; and separates raw
+  tool output from any model interpretation.
+- `claim-verifier` — claim-to-evidence verification with explicit claim states
+  `verified` / `partially-verified` / `unverified` / `failed` / `blocked` /
+  `not-applicable` (Section 4). Evaluates a claim against required evidence
+  types (`source-inspection`, `file-change`, `type-check`, `unit-test`,
+  `integration-test`, `build`, `runtime`, `engine-diagnostic`, `security-audit`,
+  `manual-review`, `external-tool`, `unavailable`, `incomplete`) and actual
+  evidence. A `failed-verification` evidence record always wins; a claim with
+  no evidence is `unverified`, never `verified`. Builds on `verification.ts`.
+- `requirement-trace` — requirement traceability (Section 6), connecting
+  requirement → plan tasks → code changes → test cases → execution evidence →
+  final claims. Each requirement carries a status
+  (`not-started` / `in-progress` / `implemented-but-untested` /
+  `tested-with-failures` / `partially-verified` / `verified-within-scope` /
+  `blocked` / `deferred`) and the identifiers of the artifacts it touches.
+
+Reused modules (no duplication): `verification.ts` (evidence records, claim
+classification), `completion-report.ts` (completion reports), `task-state.ts` /
+`task-planning-engine.ts` (task and completion states), `test-plan.ts` /
+`test-result-aggregator.ts` (acceptance criteria and test aggregation),
+`tool-risk.ts` / `approval-policy.ts` / `workspace-trust.ts` / `command-safety.ts`
+(tool risk and approval), `security-audit.ts` / `path-safety.ts` /
+`secret-redaction.ts` (security and secret redaction).
+
+Adversarial tests (Section 9) prove the verifier rejects unsupported claims:
+failed-verification evidence masks passing claims, non-zero exits are not
+success, mocked results are not real execution, unattempted commands are not
+run, timed-out commands fail, truncated/missing evidence does not verify, and
+missing acceptance criteria keep a claim partially-verified at most.
+
+Known limitations:
+- Stale-evidence invalidation based on source revision/file hashes is
+  documented but not yet wired into a persistence/revision layer (Section 8).
+- CI coverage gate, bilingual README pairing, and recorded-session snapshots
+  require the repository toolchain (`pnpm install`, `pnpm run build`,
+  doc-sync) and remain environment-dependent.
+
+All 3 modules have spec files and are re-exported from `src/index.ts`.
 
 ## Next engineering priorities
 
