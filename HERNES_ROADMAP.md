@@ -11,10 +11,10 @@ project documentation; upstream Harness documentation still lives under
 - Upstream architecture is unchanged: all-plugin Cordis harness, workspace
   packages under `packages/<group>/<pkg>/`, license MIT with
   [third-party notices](THIRD_PARTY_NOTICES.md) preserved.
-- New HERNES capability toolkit lives in `packages/util/values` as 94 pure,
-  dependency-free modules (62 from Parts 1–2, 32 added by Part 3, plus the
-  pre-existing `partial-json`) with 96 spec files and 2225 executed assertions,
-  all passing (Node-native TypeScript execution; see "Verification method").
+- New HERNES capability toolkit lives in `packages/util/values` as 102 pure,
+  dependency-free modules (94 from Parts 1–3, 8 added by Part 4) with 105 spec
+  files and 2339 executed assertions, all passing (Node-native TypeScript
+  execution; see "Verification method").
 - Part 3 added the game-development layer: 18 game modules (design spec,
   architecture, movement, AI, UI, horror, assets, animation, mobile, testing,
   performance, vertical slice, multi-agent, knowledge base, Unity/Godot
@@ -99,7 +99,7 @@ module is verified by:
    — exit 0.
 2. Executing every spec file with Node 26 native TypeScript execution against a
    minimal Vitest-compatible shim (`describe`/`it`/`expect`), reporting
-   2225 passed, 0 failed across 96 spec files (including the 99-test
+   2339 passed, 0 failed across 105 spec files (including the 99-test
    `partial-json.spec.ts` on the upgraded shim).
 3. Loading the built barrel (`lib/types/index.js`) to confirm all 379 exports
    and running 28 independent cross-module checks against that built artifact.
@@ -154,6 +154,36 @@ repository test suite passes.
 - The 14 pre-existing `verify-export-jsdoc` findings described above remain in
   unrelated packages and are not addressed here.
 - No benchmark numbers are claimed.
+
+## Part 4: AI orchestration layer (added this session)
+
+Part 4 adds a pure, dependency-free AI orchestration layer on top of the
+Parts 1–3 toolkit. All modules are pure TypeScript: they compute results from
+caller-supplied input, perform no I/O, hold no mutable state, and never invoke
+a model provider directly.
+
+New modules:
+
+- `agent-loop-state` — explicit agent-loop state machine with legal transitions
+  (initializing → understanding → planning → gathering-context →
+  awaiting-model-response → validating-tool-call → awaiting-approval →
+  executing-tool → evaluating-result → verifying → recovering →
+  completed/failed/cancelled).
+- `execution-budget` — configurable limits for tool calls, retries, elapsed
+  time, context tokens, and concurrency, enforced by application code.
+- `model-task-classifier` — deterministic task classification into practical
+  categories with a safe `general` fallback.
+- `model-router` — capability-, privacy-, availability-, and context-aware
+  model routing with explicit user-override respect and fallback reporting.
+- `context-provenance` — context source tracking (source, range, version,
+  retrieval method, observed vs summarized) and stale-context detection.
+- `project-memory` — long-running project knowledge with explicit confidence
+  levels, invalidation triggers, and credential screening.
+- `task-recovery` — partial-success reporting, resumable-step selection, and
+  safe-retry guidance for interrupted execution.
+- `idempotency` — operation idempotency classification and retry guidance.
+
+All 8 modules have spec files and are re-exported from `src/index.ts`.
 
 ## Next engineering priorities
 

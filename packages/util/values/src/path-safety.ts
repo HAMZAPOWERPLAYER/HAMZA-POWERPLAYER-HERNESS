@@ -54,6 +54,7 @@ export function normalizePath(path: string): string {
  */
 export function isPathWithinRoot(root: string, candidate: string): boolean {
   const rootSegments = normalizePathSegments(root)
+  if (rootSegments.length === 0) return false
   const candidateSegments = normalizePathSegments(candidate)
   if (candidateSegments.length < rootSegments.length) return false
   for (let i = 0; i < rootSegments.length; i += 1) {

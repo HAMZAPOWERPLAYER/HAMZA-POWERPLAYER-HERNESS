@@ -239,7 +239,7 @@ export function formatPerformanceProfile(profile: PerformanceProfile): string {
   return `
 Performance Profile:
   Samples: ${profile.sampleCount}
-  Average Frame Time: ${profile.averageFrameTimeMs.toFixed(2)}ms (${(1000 / profile.averageFrameTimeMs).toFixed(1)} FPS)
+  Average Frame Time: ${profile.averageFrameTimeMs.toFixed(2)}ms (${profile.averageFrameTimeMs === 0 ? '0.0' : (1000 / profile.averageFrameTimeMs).toFixed(1)} FPS)
   Max Frame Time: ${profile.maxFrameTimeMs.toFixed(2)}ms
   Min Frame Time: ${profile.minFrameTimeMs.toFixed(2)}ms
   Average CPU: ${profile.averageCpuUsagePercent.toFixed(1)}%
@@ -248,7 +248,7 @@ Performance Profile:
   Peak Memory: ${(profile.peakMemoryUsageBytes / (1024 * 1024)).toFixed(2)}MB
   Average Draw Calls: ${profile.averageDrawCallCount.toFixed(0)}
   Average Triangles: ${profile.averageTriangleCount.toFixed(0)}
-  Frames <= 60 FPS: ${profile.framesBelow60Fps} (${((profile.framesBelow60Fps / profile.sampleCount) * 100).toFixed(1)}%)
-  Frames <= 30 FPS: ${profile.framesBelow30Fps} (${((profile.framesBelow30Fps / profile.sampleCount) * 100).toFixed(1)}%)
+  Frames <= 60 FPS: ${profile.framesBelow60Fps} (${profile.sampleCount === 0 ? '0.0' : ((profile.framesBelow60Fps / profile.sampleCount) * 100).toFixed(1)}%)
+  Frames <= 30 FPS: ${profile.framesBelow30Fps} (${profile.sampleCount === 0 ? '0.0' : ((profile.framesBelow30Fps / profile.sampleCount) * 100).toFixed(1)}%)
 `.trim();
 }

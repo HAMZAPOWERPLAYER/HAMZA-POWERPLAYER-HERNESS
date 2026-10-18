@@ -132,7 +132,7 @@ export function checkToolArgument(argument: string): SecurityCheckResult {
  * @param inputs - named input strings to check.
  * @returns check results, one per check per input that has content.
  */
-export function runSecurityAudit(inputs: readonly { readonly name: string; readonly value: string }[]): readonly SecurityCheckResult[] {
+export function runSecurityAudit(inputs: readonly { readonly name: string; readonly value: string | null | undefined }[]): readonly SecurityCheckResult[] {
   const results: SecurityCheckResult[] = []
   for (const input of inputs) {
     if (input.value === null || input.value === undefined || input.value === '') continue

@@ -163,7 +163,7 @@ describe('runSecurityAudit', () => {
   it('skips empty values', () => {
     const results = runSecurityAudit([
       { name: 'empty', value: '' },
-      { name: 'nullish', value: null as unknown as string },
+      { name: 'nullish', value: null },
     ])
     expect(results).toEqual([])
   })

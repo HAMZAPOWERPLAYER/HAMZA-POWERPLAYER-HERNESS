@@ -19,7 +19,7 @@ import { REDACTED_PLACEHOLDER, redactSecretAssignment, redactSecrets } from './s
 const SECRET_KEY_TOKENS = /SECRET|TOKEN|PASSWORD|PASSWD|API_KEY|PRIVATE_KEY|CREDENTIAL/u
 
 /** Key-name tokens whose unredacted entries {@link assertNoUnredactedSecrets} rejects. */
-const GUARDED_KEY_TOKENS = /SECRET|TOKEN|PASSWORD|API_KEY|PRIVATE_KEY|CREDENTIAL/u
+const GUARDED_KEY_TOKENS = /SECRET|TOKEN|PASSWORD|PASSWD|API_KEY|PRIVATE_KEY|CREDENTIAL/u
 
 /** One environment value in a {@link DiagnosticsReport}. */
 export interface DiagnosticEntry {
