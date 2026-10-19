@@ -1,0 +1,72 @@
+- insert:
+    # Bootstrap: wires HERNES services into Cordis session events.
+    - id: hernes-bootstrap-plugin
+      name: '@deepseek-ai/dsh-hernes-bootstrap-plugin'
+      config:
+        enableEventWiring: true
+
+    # Task lifecycle: wires task-state, completion-report, verification.
+    - id: hernes-task-plugin
+      name: '@deepseek-ai/dsh-hernes-task-plugin'
+      config:
+        enableTaskTracking: true
+        enableCompletionReport: true
+        enforceVerification: true
+
+    # Project detection: wires project-kind, workspace-discovery.
+    - id: hernes-project-plugin
+      name: '@deepseek-ai/dsh-hernes-project-plugin'
+      config:
+        enableDetection: true
+        ignorePatterns:
+          - node_modules
+          - lib
+          - dist
+
+    # Verification: wires verification, claim-verifier, tool-result.
+    - id: hernes-verification-plugin
+      name: '@deepseek-ai/dsh-hernes-verification-plugin'
+      config:
+        enforceVerification: true
+        maxRetries: 3
+
+    # Security: wires security-audit, approval-policy, workspace-trust.
+    - id: hernes-security-plugin
+      name: '@deepseek-ai/dsh-hernes-security-plugin'
+      config:
+        enableAudit: true
+        enforceApproval: true
+
+    # Quality gate: wires game-quality-gate.
+    - id: hernes-quality-gate-plugin
+      name: '@deepseek-ai/dsh-hernes-quality-gate-plugin'
+      config:
+        enableQualityGate: true
+        minPassRate: 80
+
+    # Lifecycle: wires session events to task lifecycle.
+    - id: hernes-lifecycle-plugin
+      name: '@deepseek-ai/dsh-hernes-lifecycle-plugin'
+      config:
+        emitTaskEvents: true
+        autoCompleteOnTurnEnd: false
+
+    # Edit: wires multi-file-edit validation.
+    - id: hernes-edit-plugin
+      name: '@deepseek-ai/dsh-hernes-edit-plugin'
+      config:
+        requirePreconditions: true
+
+    # Codebase: wires codebase-understanding.
+    - id: hernes-codebase-plugin
+      name: '@deepseek-ai/dsh-hernes-codebase-plugin'
+      config:
+        enableUnderstanding: true
+        maxRankedFiles: 50
+
+    # Debug: wires error-memory and error-classification.
+    - id: hernes-debug-plugin
+      name: '@deepseek-ai/dsh-hernes-debug-plugin'
+      config:
+        enableErrorMemory: true
+        maxEntries: 1000

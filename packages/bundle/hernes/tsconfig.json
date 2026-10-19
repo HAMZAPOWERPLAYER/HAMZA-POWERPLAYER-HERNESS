@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib/types",
+    "composite": true,
+    "tsBuildInfoFile": "./tsconfig.tsbuildinfo",
+    "types": ["node"]
+  },
+  "include": ["src/**/*"],
+  "references": [
+    { "path": "../../hernes/hernes-bootstrap-plugin" },
+    { "path": "../../hernes/hernes-task-plugin" },
+    { "path": "../../hernes/hernes-project-plugin" },
+    { "path": "../../hernes/hernes-verification-plugin" },
+    { "path": "../../hernes/hernes-security-plugin" },
+    { "path": "../../hernes/hernes-quality-gate-plugin" },
+    { "path": "../../hernes/hernes-lifecycle-plugin" },
+    { "path": "../../hernes/hernes-edit-plugin" },
+    { "path": "../../hernes/hernes-codebase-plugin" },
+    { "path": "../../hernes/hernes-debug-plugin" }
+  ]
+}

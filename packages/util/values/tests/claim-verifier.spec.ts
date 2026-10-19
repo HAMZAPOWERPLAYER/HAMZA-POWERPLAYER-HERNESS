@@ -16,7 +16,7 @@ import {
 } from '../src/claim-verifier.ts'
 import { createToolResult, classifyToolResult, isToolResultFailed, isToolResultMocked, isToolResultNotRun, isToolResultSuccessful } from '../src/tool-result.ts'
 
-const evidence = (overrides: Partial<EvidenceRecord> & { category?: EvidenceCategory }): EvidenceRecord => ({
+const evidence = (overrides?: Partial<EvidenceRecord> & { category?: EvidenceCategory }): EvidenceRecord => ({
   id: 'ev-1',
   category: 'verified-command',
   subject: 'tsc build',
@@ -154,7 +154,7 @@ describe('re-uses verification primitives consistently', () => {
   it('agrees with classifyClaimSupport for strongest category', () => {
     const records = [evidence({ category: 'observed-source' }), evidence({ category: 'verified-command' })]
     const input: ClaimEvaluationInput = {
-      claimId: 'c', claimText: 't', requiredEvidenceTypes: [], actualEvidence: records.map((r) => typed(r, 'unit-test')),
+      claimId: 'c', claimText: 't', requiredEvidenceTypes: [], actualEvidence: records.map(r => typed(r, 'unit-test')),
     }
     const result = evaluateClaim(input)
     expect(result.strongestCategory).toBe(classifyClaimSupport({ text: 't', evidence: records }))

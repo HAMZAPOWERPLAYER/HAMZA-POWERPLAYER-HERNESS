@@ -6,33 +6,33 @@ describe('parseUnifiedDiff', () => {
     const diff = 'diff --git a/new.txt b/new.txt\nnew file mode 100644\n--- /dev/null\n+++ b/new.txt\n@@ -0,0 +1 @@\n+hi\n'
     const files = parseUnifiedDiff(diff)
     expect(files).toHaveLength(1)
-    expect(files[0].kind).toBe('added')
-    expect(files[0].path).toBe('new.txt')
+    expect(files[0]!.kind).toBe('added')
+    expect(files[0]!.path).toBe('new.txt')
   })
 
   it('detects a deleted file', () => {
     const diff = 'diff --git a/old.txt b/old.txt\ndeleted file mode 100644\n--- a/old.txt\n+++ /dev/null\n@@ -1 +0,0 @@\n-old\n'
     const files = parseUnifiedDiff(diff)
     expect(files).toHaveLength(1)
-    expect(files[0].kind).toBe('removed')
-    expect(files[0].path).toBe('old.txt')
+    expect(files[0]!.kind).toBe('removed')
+    expect(files[0]!.path).toBe('old.txt')
   })
 
   it('detects a modified file', () => {
     const diff = 'diff --git a/x.txt b/x.txt\n--- a/x.txt\n+++ b/x.txt\n@@ -1 +1 @@\n-old\n+new\n'
     const files = parseUnifiedDiff(diff)
     expect(files).toHaveLength(1)
-    expect(files[0].kind).toBe('modified')
-    expect(files[0].path).toBe('x.txt')
+    expect(files[0]!.kind).toBe('modified')
+    expect(files[0]!.path).toBe('x.txt')
   })
 
   it('detects a rename', () => {
     const diff = 'diff --git a/a.txt b/b.txt\nrename from a.txt\nrename to b.txt\n'
     const files = parseUnifiedDiff(diff)
     expect(files).toHaveLength(1)
-    expect(files[0].kind).toBe('renamed')
-    expect(files[0].path).toBe('b.txt')
-    expect(files[0].previousPath).toBe('a.txt')
+    expect(files[0]!.kind).toBe('renamed')
+    expect(files[0]!.path).toBe('b.txt')
+    expect(files[0]!.previousPath).toBe('a.txt')
   })
 
   it('handles multiple files', () => {

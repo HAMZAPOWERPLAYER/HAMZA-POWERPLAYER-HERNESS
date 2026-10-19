@@ -77,8 +77,8 @@ describe('routeModel', () => {
       dataSensitivity: 'confidential',
       userSelection: { providerId: 'deepseek', modelId: 'deepseek-chat' },
     }
-    const notAllowed = { ...baseCandidates[0], privacyAllowed: false }
-    const candidates = [notAllowed, baseCandidates[2]]
+    const notAllowed: RoutingCandidate = { ...baseCandidates[0]!, privacyAllowed: false }
+    const candidates: readonly RoutingCandidate[] = [notAllowed, baseCandidates[2]!]
     const decision = routeModel(req, candidates)
     expect(decision.providerId).toBe('local')
   })

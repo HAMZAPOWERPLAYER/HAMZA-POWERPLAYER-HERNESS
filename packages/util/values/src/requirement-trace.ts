@@ -12,6 +12,7 @@
  */
 
 import { type ClaimEvaluation, type ClaimState } from './claim-verifier.ts'
+export type { ClaimEvaluation } from './claim-verifier.ts'
 
 /** The status of a requirement relative to its evidence. */
 export type RequirementStatus =
@@ -167,13 +168,13 @@ export function deriveRequirementStatus(
   if (trace.blockedReason !== undefined) return 'blocked'
   if (trace.deferredReason !== undefined) return 'deferred'
 
-  const relevant = evaluations.filter((evaluation) => trace.linkedClaimIds.includes(evaluation.claimId))
+  const relevant = evaluations.filter(evaluation => trace.linkedClaimIds.includes(evaluation.claimId))
   if (relevant.length === 0) return trace.status
 
-  const anyFailed = relevant.some((evaluation) => evaluation.state === 'failed')
-  const allVerified = relevant.every((evaluation) => evaluation.state === 'verified')
-  const anyVerified = relevant.some((evaluation) => evaluation.state === 'verified')
-  const anyPartially = relevant.some((evaluation) => evaluation.state === 'partially-verified')
+  const anyFailed = relevant.some(evaluation => evaluation.state === 'failed')
+  const allVerified = relevant.every(evaluation => evaluation.state === 'verified')
+  const anyVerified = relevant.some(evaluation => evaluation.state === 'verified')
+  const anyPartially = relevant.some(evaluation => evaluation.state === 'partially-verified')
 
   if (anyFailed) return 'tested-with-failures'
   if (allVerified) return 'verified-within-scope'

@@ -1,0 +1,27 @@
+{
+  "name": "@deepseek-ai/dsh-hernes",
+  "version": "0.1.0",
+  "description": "HAMZA POWERPLAYER HERNES bundle: composes all HERNES integration plugins into a single installable bundle.",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "workspace:~"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-hernes-bootstrap-plugin": "workspace:*",
+    "@deepseek-ai/dsh-hernes-codebase-plugin": "workspace:*",
+    "@deepseek-ai/dsh-hernes-debug-plugin": "workspace:*",
+    "@deepseek-ai/dsh-hernes-edit-plugin": "workspace:*",
+    "@deepseek-ai/dsh-hernes-quality-gate-plugin": "workspace:*",
+    "@deepseek-ai/dsh-hernes-lifecycle-plugin": "workspace:*",
+    "@deepseek-ai/dsh-hernes-project-plugin": "workspace:*",
+    "@deepseek-ai/dsh-hernes-security-plugin": "workspace:*",
+    "@deepseek-ai/dsh-hernes-task-plugin": "workspace:*",
+    "@deepseek-ai/dsh-hernes-verification-plugin": "workspace:*"
+  },
+  "license": "MIT"
+}

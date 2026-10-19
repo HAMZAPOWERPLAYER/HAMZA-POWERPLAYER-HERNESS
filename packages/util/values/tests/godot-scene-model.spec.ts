@@ -19,13 +19,13 @@ describe('parseGodotScene', () => {
     ].join('\n')
     const s = parseGodotScene(text)
     expect(s.nodes).toHaveLength(3)
-    expect(s.nodes[0].name).toBe('Main')
-    expect(s.nodes[0].type).toBe('Node2D')
-    expect(s.nodes[0].parent).toBeNull()
-    expect(s.nodes[1].parent).toBe('.')
-    expect(s.nodes[2].instanced).toBe(true)
+    expect(s.nodes[0]!.name).toBe('Main')
+    expect(s.nodes[0]!.type).toBe('Node2D')
+    expect(s.nodes[0]!.parent).toBeNull()
+    expect(s.nodes[1]!.parent).toBe('.')
+    expect(s.nodes[2]!.instanced).toBe(true)
     expect(s.resources).toHaveLength(1)
-    expect(s.resources[0].id).toBe('1')
+    expect(s.resources[0]!.id).toBe('1')
     expect(s.connections).toHaveLength(1)
     expect(s.rootNodeNames).toEqual(['Main'])
   })
@@ -50,7 +50,7 @@ describe('parseGodotScene', () => {
 
   it('reads a resource without a type', () => {
     const s = parseGodotScene('[ext_resource path="res://x.png" id="9"]\n')
-    expect(s.resources[0].type).toBeNull()
+    expect(s.resources[0]!.type).toBeNull()
   })
 })
 

@@ -11,7 +11,7 @@ const step = (id: string, status: TaskStep['status'], idempotent = true): TaskSt
   name: `step-${id}`,
   status,
   idempotent,
-  changedFiles: id === 'a' ? ['src/a.ts'] : undefined,
+  ...(id === 'a' ? { changedFiles: ['src/a.ts'] } : {}),
 })
 
 describe('buildPartialSuccessReport', () => {

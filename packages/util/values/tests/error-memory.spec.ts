@@ -8,19 +8,6 @@ import {
   type ErrorMemoryEntry,
 } from '../src/error-memory.ts'
 
-function entry(overrides: Partial<ErrorMemoryEntry> = {}): ErrorMemoryEntry {
-  return {
-    id: overrides.id ?? 'err-1',
-    rootCause: overrides.rootCause ?? 'null pointer dereference',
-    fix: overrides.fix ?? 'add null check',
-    affectedFile: overrides.affectedFile ?? 'src/parser.ts',
-    affectedVersions: overrides.affectedVersions ?? ['1.0.0'],
-    regressionTest: overrides.regressionTest,
-    createdAt: overrides.createdAt ?? 1_000_000_000_000,
-    lastRevalidatedAt: overrides.lastRevalidatedAt,
-  }
-}
-
 describe('createErrorMemoryEntry', () => {
   it('creates an entry with all fields', () => {
     const e = createErrorMemoryEntry({
@@ -89,7 +76,7 @@ describe('revalidateErrorMemoryEntry', () => {
     const before = e.lastRevalidatedAt
     revalidateErrorMemoryEntry(e, 2_000_000_000_000)
     expect(e.lastRevalidatedAt).toBe(before)
-  }
+  })
 })
 
 describe('searchErrorMemory', () => {
@@ -117,25 +104,25 @@ describe('searchErrorMemory', () => {
   it('finds entries by affected file', () => {
     const found = searchErrorMemory(entries, 'parser.ts')
     expect(found).toHaveLength(2)
-    expect(found.map((e) => e.id)).toEqual(['err-1', 'err-3'])
+    expect(found.map(e => e.id)).toEqual(['err-1', 'err-3'])
   })
 
   it('finds entries by root cause substring', () => {
     const found = searchErrorMemory(entries, 'null pointer')
     expect(found).toHaveLength(1)
-    expect(found[0].id).toBe('err-1')
+    expect(found[0]!.id).toBe('err-1')
   })
 
   it('finds entries by fix substring', () => {
     const found = searchErrorMemory(entries, 'increase heap')
     expect(found).toHaveLength(1)
-    expect(found[0].id).toBe('err-3')
+    expect(found[0]!.id).toBe('err-3')
   })
 
   it('is case-insensitive', () => {
     const found = searchErrorMemory(entries, 'NULL POINTER')
     expect(found).toHaveLength(1)
-    expect(found[0].id).toBe('err-1')
+    expect(found[0]!.id).toBe('err-1')
   })
 
   it('returns empty when nothing matches', () => {
@@ -176,13 +163,13 @@ describe('filterErrorMemoryByVersion', () => {
   it('filters by exact version', () => {
     const found = filterErrorMemoryByVersion(entries, '1.0.0')
     expect(found).toHaveLength(1)
-    expect(found[0].id).toBe('err-1')
+    expect(found[0]!.id).toBe('err-1')
   })
 
   it('filters by version substring', () => {
     const found = filterErrorMemoryByVersion(entries, '1.0')
     expect(found).toHaveLength(1)
-    expect(found[0].id).toBe('err-1')
+    expect(found[0]!.id).toBe('err-1')
   })
 
   it('returns empty when no entry matches', () => {
@@ -214,7 +201,7 @@ describe('summarizeErrorMemory', () => {
           affectedFile: 'a.ts',
           affectedVersions: ['1.0.0'],
         }),
-        2_000_000_000_000
+        2_000_000_000_000,
       ),
       createErrorMemoryEntry({
         id: 'err-2',

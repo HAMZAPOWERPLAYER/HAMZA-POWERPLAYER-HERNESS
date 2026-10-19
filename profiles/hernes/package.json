@@ -1,0 +1,16 @@
+{
+  "name": "hernes",
+  "version": "0.1.0",
+  "private": true,
+  "description": "HAMZA POWERPLAYER HERNES profile: game-development and AI orchestration on DeepSeek Harness.",
+  "type": "module",
+  "dsh": {
+    "profile": {
+      "bundles": [
+        "@deepseek-ai/dsh-base",
+        "@deepseek-ai/dsh-hernes",
+        "@deepseek-ai/dsh-headless"
+      ]
+    }
+  }
+}

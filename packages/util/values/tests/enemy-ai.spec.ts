@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { AIConfig, AIStateInstance } from '../src/index.ts'
+import type { AIConfig, AIState, AIStateInstance } from '../src/index.ts'
 import {
   DEFAULT_AI_CONFIG,
   createAIState,
@@ -271,12 +271,12 @@ describe('validateAIConfig', () => {
   it('flags transitions referencing unknown states', () => {
     const toUnknown: AIConfig = {
       ...DEFAULT_AI_CONFIG,
-      transitions: [{ from: 'idle', to: 'fly', condition: 'test', minTime: 0 }],
+      transitions: [{ from: 'idle', to: 'fly' as AIState, condition: 'test', minTime: 0 }],
     }
     expect(validateAIConfig(toUnknown)).toEqual(["transition to unknown state 'fly'"])
     const fromUnknown: AIConfig = {
       ...DEFAULT_AI_CONFIG,
-      transitions: [{ from: 'ghost', to: 'idle', condition: 'test', minTime: 0 }],
+      transitions: [{ from: 'ghost' as AIState, to: 'idle', condition: 'test', minTime: 0 }],
     }
     expect(validateAIConfig(fromUnknown)).toEqual(["transition from unknown state 'ghost'"])
   })

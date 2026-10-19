@@ -38,7 +38,7 @@ describe('canTransitionAgentLoop', () => {
 
   it('disallows transitions out of terminal states', () => {
     expect(canTransitionAgentLoop('completed', 'planning')).toBe(false)
-    expect(canTransitionAgentLoop('failed', 'running')).toBe(false)
+    expect(canTransitionAgentLoop('failed', 'understanding')).toBe(false)
     expect(canTransitionAgentLoop('cancelled', 'understanding')).toBe(false)
   })
 
@@ -66,7 +66,7 @@ describe('transitionAgentLoop', () => {
   })
 
   it('returns null from terminal states', () => {
-    expect(transitionAgentLoop('failed', 'running')).toBeNull()
+    expect(transitionAgentLoop('failed', 'understanding')).toBeNull()
   })
 })
 

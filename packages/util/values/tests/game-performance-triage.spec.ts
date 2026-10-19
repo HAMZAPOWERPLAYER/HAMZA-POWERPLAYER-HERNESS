@@ -84,15 +84,15 @@ function memoryAttribution() {
 }
 
 function skippedIds(result: ReturnType<typeof diagnosePerformance>): string[] {
-  return result.steps.filter((step) => step.skipped).map((step) => step.id)
+  return result.steps.filter(step => step.skipped).map(step => step.id)
 }
 
 describe('PERFORMANCE_TRIAGE_STEPS', () => {
   it('lists eleven steps in workflow order', () => {
-    expect(PERFORMANCE_TRIAGE_STEPS.map((step) => step.id)).toEqual([...STEP_ORDER])
+    expect(PERFORMANCE_TRIAGE_STEPS.map(step => step.id)).toEqual([...STEP_ORDER])
   })
   it('has unique step ids', () => {
-    const ids = PERFORMANCE_TRIAGE_STEPS.map((step) => step.id)
+    const ids = PERFORMANCE_TRIAGE_STEPS.map(step => step.id)
     expect(new Set(ids).size).toBe(ids.length)
   })
   it('documents action, required evidence, and skip condition for every step', () => {
@@ -107,8 +107,8 @@ describe('PERFORMANCE_TRIAGE_STEPS', () => {
 describe('diagnosePerformance symptom kinds', () => {
   it('runs the full workflow for lag with the update loop ranked first', () => {
     const result = diagnosePerformance(symptom('lag', 'frame rate drops in crowded rooms'))
-    expect(result.steps.map((step) => step.id)).toEqual([...STEP_ORDER])
-    expect(result.rankedCauses.map((cause) => cause.causeId)).toEqual([
+    expect(result.steps.map(step => step.id)).toEqual([...STEP_ORDER])
+    expect(result.rankedCauses.map(cause => cause.causeId)).toEqual([
       'update-loop-cost',
       'gpu-bound-rendering',
       'draw-call-overhead',
@@ -120,7 +120,7 @@ describe('diagnosePerformance symptom kinds', () => {
   it('runs the full workflow for stutter with shader compilation ranked first', () => {
     const result = diagnosePerformance(symptom('stutter', 'hitch every few seconds'))
     expect(result.steps).toHaveLength(11)
-    expect(result.rankedCauses.map((cause) => cause.causeId)).toEqual([
+    expect(result.rankedCauses.map(cause => cause.causeId)).toEqual([
       'shader-compilation-hitch',
       'allocation-churn',
       'scene-transition-load',
@@ -131,7 +131,7 @@ describe('diagnosePerformance symptom kinds', () => {
   it('runs the full workflow for freeze with scene transitions ranked first', () => {
     const result = diagnosePerformance(symptom('freeze', 'game stops for two seconds'))
     expect(result.steps).toHaveLength(11)
-    expect(result.rankedCauses.map((cause) => cause.causeId)).toEqual([
+    expect(result.rankedCauses.map(cause => cause.causeId)).toEqual([
       'scene-transition-load',
       'update-loop-cost',
       'allocation-churn',
@@ -142,7 +142,7 @@ describe('diagnosePerformance symptom kinds', () => {
   it('runs the full workflow for black-screen with a render error ranked first', () => {
     const result = diagnosePerformance(symptom('black-screen', 'screen stays black after the intro'))
     expect(result.steps).toHaveLength(11)
-    expect(result.rankedCauses.map((cause) => cause.causeId)).toEqual([
+    expect(result.rankedCauses.map(cause => cause.causeId)).toEqual([
       'render-pipeline-error',
       'shader-compilation-hitch',
       'scene-transition-load',
@@ -153,7 +153,7 @@ describe('diagnosePerformance symptom kinds', () => {
 
 describe('diagnosePerformance guards', () => {
   it('throws for an unknown symptom kind', () => {
-    const unknown = { kind: 'rain', description: 'drops' } as PerformanceSymptom
+    const unknown = { kind: 'rain', description: 'drops' } as unknown as PerformanceSymptom
     expect(() => diagnosePerformance(unknown)).toThrow(/unknown symptom kind: rain/)
   })
   it('rejects a profile with a negative frame time', () => {
@@ -190,7 +190,7 @@ describe('diagnosePerformance skip decisions', () => {
   it('skips only the comparison step when no evidence is supplied', () => {
     const result = diagnosePerformance(symptom('lag'))
     expect(skippedIds(result)).toEqual(['compare-measurements'])
-    const compare = result.steps.find((step) => step.id === 'compare-measurements')
+    const compare = result.steps.find(step => step.id === 'compare-measurements')
     expect(compare?.skipReason).toBe('no profiles supplied for comparison')
   })
   it('skips log-dependent steps when log findings are supplied', () => {
@@ -207,8 +207,8 @@ describe('diagnosePerformance skip decisions', () => {
       'memory-allocations',
       'compare-measurements',
     ])
-    expect(result.steps.find((step) => step.id === 'check-update-loop')?.skipped).toBe(false)
-    expect(result.steps.find((step) => step.id === 'gpu-cpu-bottleneck')?.skipped).toBe(false)
+    expect(result.steps.find(step => step.id === 'check-update-loop')?.skipped).toBe(false)
+    expect(result.steps.find(step => step.id === 'gpu-cpu-bottleneck')?.skipped).toBe(false)
     for (const step of result.steps) {
       if (step.skipped) {
         expect(typeof step.skipReason).toBe('string')
@@ -230,7 +230,7 @@ describe('diagnosePerformance skip decisions', () => {
   it('skips the comparison step when only a current profile is supplied', () => {
     const result = diagnosePerformance(symptom('lag'), makeProfile())
     expect(skippedIds(result)).toEqual(['compare-measurements'])
-    const compare = result.steps.find((step) => step.id === 'compare-measurements')
+    const compare = result.steps.find(step => step.id === 'compare-measurements')
     expect(compare?.skipReason).toBe('baseline profile not supplied')
     expect('baselineComparison' in result).toBe(false)
   })
@@ -254,7 +254,7 @@ describe('diagnosePerformance evidence discipline', () => {
       expect(cause.confirmingEvidence).toEqual([])
       expect(cause.missingEvidence.length).toBeGreaterThan(0)
     }
-    const updateLoop = result.rankedCauses.find((cause) => cause.causeId === 'update-loop-cost')
+    const updateLoop = result.rankedCauses.find(cause => cause.causeId === 'update-loop-cost')
     expect(updateLoop?.missingEvidence).toContain('CPU bottleneck attribution from analyzePerformance')
   })
   it('confirms the draw-call cause from supplied bottleneck attribution', () => {
@@ -271,7 +271,7 @@ describe('diagnosePerformance evidence discipline', () => {
   it('keeps uncorroborated evidence kinds listed as missing on a confirmed cause', () => {
     const { profile, bottlenecks } = cpuAttribution()
     const result = diagnosePerformance(symptom('lag'), { profile, bottlenecks })
-    const updateLoop = result.rankedCauses.find((cause) => cause.causeId === 'update-loop-cost')
+    const updateLoop = result.rankedCauses.find(cause => cause.causeId === 'update-loop-cost')
     expect(updateLoop?.likelihood).toBe('confirmed')
     expect(updateLoop?.confirmingEvidence).toEqual([
       'bottleneck attribution: Average frame time 40.00ms exceeds target 16.67ms',
@@ -292,13 +292,13 @@ describe('diagnosePerformance evidence discipline', () => {
     ]
     const result = diagnosePerformance(symptom('stutter'), { logFindings })
     expect(result.measured).toBe(false)
-    const shader = result.rankedCauses.find((cause) => cause.causeId === 'shader-compilation-hitch')
+    const shader = result.rankedCauses.find(cause => cause.causeId === 'shader-compilation-hitch')
     expect(shader?.likelihood).toBe('likely')
     expect(shader?.confirmingEvidence).toEqual([
       'log finding (shader-compilation): compiled 42 shaders mid-frame',
     ])
     expect(shader?.missingEvidence).toEqual([])
-    expect(result.rankedCauses.every((cause) => cause.likelihood !== 'confirmed')).toBe(true)
+    expect(result.rankedCauses.every(cause => cause.likelihood !== 'confirmed')).toBe(true)
   })
   it('raises the update-loop cause from a CPU-dominant profile without confirming it', () => {
     const profile = makeProfile({ averageFrameTimeMs: 30, averageCpuUsagePercent: 90, averageGpuUsagePercent: 30 })
@@ -309,11 +309,11 @@ describe('diagnosePerformance evidence discipline', () => {
     expect(result.rankedCauses[0]?.confirmingEvidence).toEqual([
       'profile: average CPU usage 90% exceeds average GPU usage 30%',
     ])
-    expect(result.rankedCauses.every((cause) => cause.likelihood !== 'confirmed')).toBe(true)
+    expect(result.rankedCauses.every(cause => cause.likelihood !== 'confirmed')).toBe(true)
   })
   it('keeps both evidence kinds listed as missing on an unevidenced profile', () => {
     const result = diagnosePerformance(symptom('lag'), makeProfile())
-    const updateLoop = result.rankedCauses.find((cause) => cause.causeId === 'update-loop-cost')
+    const updateLoop = result.rankedCauses.find(cause => cause.causeId === 'update-loop-cost')
     expect(updateLoop?.likelihood).toBe('possible')
     expect(updateLoop?.confirmingEvidence).toEqual([])
     expect(updateLoop?.missingEvidence).toEqual([
@@ -326,7 +326,7 @@ describe('diagnosePerformance evidence discipline', () => {
       { category: 'render-error', detail: 'shader link failed' },
     ]
     const result = diagnosePerformance(symptom('lag'), { logFindings })
-    expect(result.rankedCauses.map((cause) => cause.causeId)).toEqual([
+    expect(result.rankedCauses.map(cause => cause.causeId)).toEqual([
       'render-pipeline-error',
       'update-loop-cost',
       'gpu-bound-rendering',
@@ -357,7 +357,7 @@ describe('diagnosePerformance baseline comparison', () => {
     expect(result.measured).toBe(true)
     expect(result.baselineComparison).toEqual(comparePerformanceProfiles(before, after))
     expect(result.baselineComparison?.frameTimeChangePercent).toBe(-50)
-    const compare = result.steps.find((step) => step.id === 'compare-measurements')
+    const compare = result.steps.find(step => step.id === 'compare-measurements')
     expect(compare?.skipped).toBe(false)
   })
   it('accepts a bare profile as the second argument', () => {
@@ -377,12 +377,12 @@ describe('diagnosePerformance purity', () => {
     }
     const symptomBefore = JSON.stringify(reported)
     const evidenceBefore = JSON.stringify(evidence)
-    const stepsBefore = PERFORMANCE_TRIAGE_STEPS.map((step) => step.id).join('|')
+    const stepsBefore = PERFORMANCE_TRIAGE_STEPS.map(step => step.id).join('|')
     const first = diagnosePerformance(reported, evidence)
     const second = diagnosePerformance(reported, evidence)
     expect(JSON.stringify(reported)).toBe(symptomBefore)
     expect(JSON.stringify(evidence)).toBe(evidenceBefore)
-    expect(PERFORMANCE_TRIAGE_STEPS.map((step) => step.id).join('|')).toBe(stepsBefore)
+    expect(PERFORMANCE_TRIAGE_STEPS.map(step => step.id).join('|')).toBe(stepsBefore)
     expect(second).toEqual(first)
   })
 })

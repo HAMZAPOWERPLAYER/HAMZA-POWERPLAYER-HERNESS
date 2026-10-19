@@ -1,0 +1,19 @@
+{
+  "name": "@deepseek-ai/dsh-hernes-debug-plugin",
+  "version": "0.1.0",
+  "description": "HERNES debugging plugin: wires error-memory and error-classification into debugging workflows through Cordis extension points.",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "workspace:~"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-util-values": "workspace:*"
+  },
+  "license": "MIT"
+}

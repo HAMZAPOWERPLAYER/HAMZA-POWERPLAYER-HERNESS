@@ -8,7 +8,6 @@ import {
   checkSymlinkEscape,
   checkToolArgument,
   runSecurityAudit,
-  type SecurityCheckResult,
 } from '../src/security-audit.ts'
 
 describe('checkPathTraversal', () => {
@@ -153,11 +152,11 @@ describe('runSecurityAudit', () => {
       { name: 'path1', value: '../etc/passwd' },
     ])
     expect(results.length).toBe(5)
-    expect(results.find((r) => r.check === 'path-traversal')?.passed).toBe(false)
-    expect(results.find((r) => r.check === 'symlink-escape')?.passed).toBe(false)
-    expect(results.find((r) => r.check === 'absolute-path')?.passed).toBe(true)
-    expect(results.find((r) => r.check === 'secret-leakage')?.passed).toBe(true)
-    expect(results.find((r) => r.check === 'shell-injection')?.passed).toBe(true)
+    expect(results.find(r => r.check === 'path-traversal')?.passed).toBe(false)
+    expect(results.find(r => r.check === 'symlink-escape')?.passed).toBe(false)
+    expect(results.find(r => r.check === 'absolute-path')?.passed).toBe(true)
+    expect(results.find(r => r.check === 'secret-leakage')?.passed).toBe(true)
+    expect(results.find(r => r.check === 'shell-injection')?.passed).toBe(true)
   })
 
   it('skips empty values', () => {

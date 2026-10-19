@@ -3,7 +3,6 @@ import {
   classifyIdempotency,
   mayRetryBlindly,
   requiresStateInspection,
-  type OperationDescriptor,
 } from '../src/idempotency.ts'
 
 describe('classifyIdempotency', () => {

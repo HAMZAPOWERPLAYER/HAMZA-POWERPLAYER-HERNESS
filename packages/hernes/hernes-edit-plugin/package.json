@@ -1,0 +1,19 @@
+{
+  "name": "@deepseek-ai/dsh-hernes-edit-plugin",
+  "version": "0.1.0",
+  "description": "HERNES edit plugin: wires multi-file-edit validation into file editing workflows through Cordis extension points.",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "workspace:~"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-util-values": "workspace:*"
+  },
+  "license": "MIT"
+}

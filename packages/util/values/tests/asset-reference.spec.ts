@@ -57,8 +57,8 @@ describe('findGuidCollisions', () => {
     ]
     const collisions = findAssetGuidCollisions(refs)
     expect(collisions).toHaveLength(1)
-    expect(collisions[0].guid).toBe('aaaabbbbccccddddeeeeffff00001111')
-    expect(collisions[0].assetPaths).toEqual(['Assets/A.unity', 'Assets/B.unity'])
+    expect(collisions[0]!.guid).toBe('aaaabbbbccccddddeeeeffff00001111')
+    expect(collisions[0]!.assetPaths).toEqual(['Assets/A.unity', 'Assets/B.unity'])
   })
 
   it('returns an empty array when no guid collides', () => {
@@ -86,10 +86,10 @@ describe('findGuidCollisions', () => {
     ]
     const collisions = findAssetGuidCollisions(refs)
     expect(collisions).toHaveLength(2)
-    expect(collisions[0].guid).toBe('aaaabbbbccccddddeeeeffff00001111')
-    expect(collisions[0].assetPaths).toEqual(['Assets/A.unity', 'Assets/M.unity'])
-    expect(collisions[1].guid).toBe('zzzzyyyyxxxxwwwwvvvvuuuu111122223333')
-    expect(collisions[1].assetPaths).toEqual(['Assets/Y.unity', 'Assets/Z.unity'])
+    expect(collisions[0]!.guid).toBe('aaaabbbbccccddddeeeeffff00001111')
+    expect(collisions[0]!.assetPaths).toEqual(['Assets/A.unity', 'Assets/M.unity'])
+    expect(collisions[1]!.guid).toBe('zzzzyyyyxxxxwwwwvvvvuuuu111122223333')
+    expect(collisions[1]!.assetPaths).toEqual(['Assets/Y.unity', 'Assets/Z.unity'])
   })
 })
 

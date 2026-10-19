@@ -5,7 +5,7 @@ import {
   preserveUserSettings,
   validateConfig,
   type ConfigFieldRule,
-  type ConfigValidationResult,
+  type ConfigValidationProblem,
   type ConfigMigrationStep,
 } from '../src/config-migration.ts'
 
@@ -51,8 +51,8 @@ describe('validateConfig', () => {
     const result = validateConfig(config, rules)
     expect(result.valid).toBe(false)
     expect(result.problems).toHaveLength(1)
-    expect(result.problems[0].path).toBe('port')
-    expect(result.problems[0].severity).toBe('error')
+    expect(result.problems[0]!.path).toBe('port')
+    expect(result.problems[0]!.severity).toBe('error')
   })
 
   it('reports wrong types', () => {
@@ -60,8 +60,8 @@ describe('validateConfig', () => {
     const rules = [rule({ path: 'port', type: 'number', required: true })]
     const result = validateConfig(config, rules)
     expect(result.valid).toBe(false)
-    expect(result.problems[0].path).toBe('port')
-    expect(result.problems[0].message).toContain('expected type number')
+    expect(result.problems[0]!.path).toBe('port')
+    expect(result.problems[0]!.message).toContain('expected type number')
   })
 
   it('passes optional fields that are absent', () => {
@@ -78,7 +78,7 @@ describe('validateConfig', () => {
     ]
     const result = validateConfig(config, rules)
     expect(result.valid).toBe(false)
-    expect(result.problems[0].message).toContain('allowed values')
+    expect(result.problems[0]!.message).toContain('allowed values')
   })
 
   it('rejects values below minimum', () => {
@@ -86,7 +86,7 @@ describe('validateConfig', () => {
     const rules = [rule({ path: 'port', type: 'number', min: 1024 })]
     const result = validateConfig(config, rules)
     expect(result.valid).toBe(false)
-    expect(result.problems[0].message).toContain('below minimum')
+    expect(result.problems[0]!.message).toContain('below minimum')
   })
 
   it('rejects values above maximum', () => {
@@ -94,7 +94,7 @@ describe('validateConfig', () => {
     const rules = [rule({ path: 'port', type: 'number', max: 65535 })]
     const result = validateConfig(config, rules)
     expect(result.valid).toBe(false)
-    expect(result.problems[0].message).toContain('exceeds maximum')
+    expect(result.problems[0]!.message).toContain('exceeds maximum')
   })
 
   it('runs custom validation functions', () => {
@@ -103,7 +103,7 @@ describe('validateConfig', () => {
       rule({
         path: 'name',
         type: 'string',
-        validate: (v) =>
+        validate: v =>
           (v as string).length === 0
             ? { path: 'name', message: 'name cannot be empty', severity: 'error' }
             : null,
@@ -111,7 +111,7 @@ describe('validateConfig', () => {
     ]
     const result = validateConfig(config, rules)
     expect(result.valid).toBe(false)
-    expect(result.problems[0].message).toContain('name cannot be empty')
+    expect(result.problems[0]!.message).toContain('name cannot be empty')
   })
 
   it('reports multiple problems', () => {
@@ -130,12 +130,12 @@ describe('migrateConfig', () => {
   const step1to2: ConfigMigrationStep = {
     from: '1.0.0',
     to: '2.0.0',
-    migrate: (config) => ({ ...config, schemaVersion: '2.0.0' }),
+    migrate: config => ({ ...config, schemaVersion: '2.0.0' }),
   }
   const step2to3: ConfigMigrationStep = {
     from: '2.0.0',
     to: '3.0.0',
-    migrate: (config) => ({ ...config, schemaVersion: '3.0.0', migrated: true }),
+    migrate: config => ({ ...config, schemaVersion: '3.0.0', migrated: true }),
   }
 
   it('migrates through multiple steps', () => {
@@ -156,7 +156,7 @@ describe('migrateConfig', () => {
     expect(result.migratedConfig).toBe(null)
     expect(result.migrated).toBe(false)
     expect(result.problems).toHaveLength(1)
-    expect(result.problems[0].message).toContain('no migration step')
+    expect(result.problems[0]!.message).toContain('no migration step')
   })
 
   it('returns original config when source equals target', () => {
@@ -176,7 +176,7 @@ describe('migrateConfig', () => {
     const result = migrateConfig(config, [failingStep], '1.0.0', '2.0.0')
     expect(result.migratedConfig).toBe(null)
     expect(result.migrated).toBe(false)
-    expect(result.problems[0].message).toContain('migration from 1.0.0 to 2.0.0 failed')
+    expect(result.problems[0]!.message).toContain('migration from 1.0.0 to 2.0.0 failed')
   })
 })
 

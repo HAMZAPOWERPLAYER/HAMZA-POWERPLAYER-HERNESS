@@ -102,7 +102,7 @@ describe('validateGodotSceneIntegrity resource paths', () => {
       message: 'External resource path "res://scripts/player.gd" was not among the observed files.',
       file: 'res://scripts/player.gd',
     })
-    expect(result.findings[0].suggestion).toContain('script file')
+    expect(result.findings[0]!.suggestion).toContain('script file')
   })
 
   it('matches observed paths across prefix, separator, and case variants', () => {
@@ -141,7 +141,7 @@ describe('validateGodotSceneIntegrity resource paths', () => {
       '[node name="A" type="Node"]',
     ])
     const result = validateGodotSceneIntegrity(scene, [])
-    expect(result.findings.map((f) => f.category)).toEqual(['script', 'resource'])
+    expect(result.findings.map(f => f.category)).toEqual(['script', 'resource'])
     expect(result.hasErrors).toBe(true)
     expect(result.hasWarnings).toBe(false)
   })
@@ -327,7 +327,7 @@ describe('validateGodotSceneIntegrity result flags and ordering', () => {
       '[connection signal="boom" from="Ghost" to="." method="_on_boom"]',
     ])
     const result = validateGodotSceneIntegrity(scene, [])
-    expect(result.findings.map((f) => f.category)).toEqual([
+    expect(result.findings.map(f => f.category)).toEqual([
       'script',
       'resource',
       'resource',
@@ -341,7 +341,7 @@ describe('validateGodotSceneIntegrity result flags and ordering', () => {
   it('sets both flags when a scene has warnings and errors together', () => {
     const scene = parse(['[ext_resource type="Script" path="res://gone.gd" id="1_a"]'])
     const result = validateGodotSceneIntegrity(scene, [])
-    expect(result.findings.map((f) => f.category)).toEqual(['scene', 'script'])
+    expect(result.findings.map(f => f.category)).toEqual(['scene', 'script'])
     expect(result.hasErrors).toBe(true)
     expect(result.hasWarnings).toBe(true)
   })
@@ -358,7 +358,7 @@ describe('validateGodotSceneIntegrity result flags and ordering', () => {
     expect(second).toEqual(first)
     const again = validateGodotSceneIntegrity(scene, ['scripts/a.gd', 'other.tres'])
     expect(again).toEqual(first)
-    expect(first.findings.map((f) => f.category)).toEqual(['resource', 'connection'])
+    expect(first.findings.map(f => f.category)).toEqual(['resource', 'connection'])
   })
 })
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { routeGameRequest } from '../src/game-request-router.ts'
+import { routeGameRequest, type GameRequestInput } from '../src/game-request-router.ts'
 
 const srcDir = fileURLToPath(new URL('../src/', import.meta.url))
 
@@ -101,7 +101,7 @@ describe('routeGameRequest', () => {
     expect(route.capabilities).toEqual(['export-build'])
     expect(route.recommendedModules).toContain('android-gradle-model.ts')
     expect(route.confidence).toBe('medium')
-    expect(route.clarifications.some((line) => line.includes('engine'))).toBe(true)
+    expect(route.clarifications.some(line => line.includes('engine'))).toBe(true)
   })
 
   it('adds engine-specific export modules when the engine is known', () => {
@@ -131,7 +131,7 @@ describe('routeGameRequest', () => {
   it('does not change its input', () => {
     const input = { request: 'Implement a save system', project: { engine: 'godot', complexity: 'large' } }
     const snapshot = JSON.parse(JSON.stringify(input))
-    routeGameRequest(input)
+    routeGameRequest(input as GameRequestInput)
     expect(input).toEqual(snapshot)
   })
 

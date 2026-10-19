@@ -15,6 +15,13 @@ project documentation; upstream Harness documentation still lives under
   dependency-free modules (94 from Parts 1–3, 8 added by Part 4, 3 added by
   Part 5) with 108 spec files and 2413 executed assertions, all passing
   (Node-native TypeScript execution; see "Verification method").
+- Part 6: Cordis plugin integration layer in `packages/hernes/` with 10 pure
+  service plugins, 1 bundle package, and 1 profile directory. All plugins wire
+  `packages/util/values` pure modules into Cordis extension points
+  (`ctx.effect()`, `declare module '@deepseek-ai/cordis'`, `ctx.on()`).
+  Toolchain restored: `pnpm install` completes, `pnpm run typecheck` passes all
+  5 gates (host compiler, Host Typert, client compiler, client aggregate, host
+  aggregate).
 - Part 3 added the game-development layer: 18 game modules (design spec,
   architecture, movement, AI, UI, horror, assets, animation, mobile, testing,
   performance, vertical slice, multi-agent, knowledge base, Unity/Godot
@@ -237,12 +244,58 @@ Known limitations:
 
 All 3 modules have spec files and are re-exported from `src/index.ts`.
 
+## Part 6: Cordis plugin integration layer (added this session)
+
+Part 6 wires the Parts 1–5 pure modules into the Cordis application through
+documented extension points. All modules are pure TypeScript service plugins:
+they delegate to `@deepseek-ai/dsh-util-values` pure functions, perform no I/O
+of their own, hold no mutable state beyond service instance fields, and never
+invoke a model provider directly.
+
+New packages under `packages/hernes/`:
+
+- `hernes-task-plugin` — `HernesTaskService`: task lifecycle tracking,
+  completion report assembly, evidence-based claim verification
+- `hernes-project-plugin` — `HernesProjectService`: project kind detection,
+  workspace summarization
+- `hernes-verification-plugin` — `HernesVerificationService`: claim-to-evidence
+  verification, tool-result envelope creation
+- `hernes-security-plugin` — `HernesSecurityService`: security auditing,
+  approval decisions, workspace trust resolution
+- `hernes-quality-gate-plugin` — `HernesQualityGateService`: quality gate
+  evaluation for architecture, correctness, security, testing, performance,
+  maintainability
+- `hernes-lifecycle-plugin` — `HernesLifecycleService`: session lifecycle hook
+  wiring (turn/start, turn/end, step/start, step/end)
+- `hernes-bootstrap-plugin` — `HernesBootstrapService`: session event listener
+  wiring, HERNES event type declaration
+- `hernes-edit-plugin` — `HernesEditService`: multi-file edit validation with
+  precondition checking
+- `hernes-codebase-plugin` — `HernesCodebaseService`: dependency graph building,
+  file ranking, affected-file analysis
+- `hernes-debug-plugin` — `HernesDebugService`: error classification, error
+  memory storage, retry guidance
+
+New package under `packages/bundle/hernes/`:
+- `dsh-hernes` — bundle composing all 10 plugins into a single installable unit
+  with `cordis.patch.yml` wiring
+
+New directory under `profiles/hernes/`:
+- HERNES profile selecting base + hernes + headless bundles
+
+Reused modules (no duplication): all `packages/util/values` modules listed in
+Parts 1–5, plus Cordis `Service`, `Context`, `ctx.effect()`, `ctx.on()`,
+declaration merging via `declare module '@deepseek-ai/cordis'`.
+
 ## Next engineering priorities
 
 1. Restore the toolchain (`pnpm install`, `pnpm run build`, `pnpm test`) and
    confirm the 100% per-file coverage gate over the new modules.
 2. Record the bilingual README pair for `packages/util/values`.
 3. Wire `task-state`, `completion-report`, and `project-kind` through documented
-   plugin extension points rather than module-level imports.
+   plugin extension points rather than module-level imports — DONE via
+   `packages/hernes/*` plugins.
 4. Add engine integrations (Unity batch-mode diagnostics, Godot headless
    checks) as independently testable packages with real-command verification.
+5. End-to-end acceptance tests (Scenarios A–G) through real application paths.
+6. Coverage gate verification (`pnpm run test:coverage`).

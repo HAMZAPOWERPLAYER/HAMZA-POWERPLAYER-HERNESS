@@ -29,7 +29,7 @@ describe('diagnoseGodotProject', () => {
       message: 'project.godot not found; Godot project may be incomplete.',
       file: null,
     })
-    expect(result.findings[0].suggestion).toContain('project.godot')
+    expect(result.findings[0]!.suggestion).toContain('project.godot')
     expect(result.hasErrors).toBe(true)
     expect(result.hasWarnings).toBe(false)
   })
@@ -138,8 +138,8 @@ describe('diagnoseGodotProject', () => {
       { path: 'scripts/Enemy.cs', content: null },
     ])
     expect(result.findings).toHaveLength(4)
-    expect(result.findings.map((f) => f.category)).toEqual(['scene', 'resource', 'script', 'script'])
-    expect(result.findings.every((f) => f.severity === 'error')).toBe(true)
+    expect(result.findings.map(f => f.category)).toEqual(['scene', 'resource', 'script', 'script'])
+    expect(result.findings.every(f => f.severity === 'error')).toBe(true)
     expect(result.hasErrors).toBe(true)
     expect(result.hasWarnings).toBe(false)
   })

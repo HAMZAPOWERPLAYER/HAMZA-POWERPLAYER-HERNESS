@@ -7,6 +7,7 @@ import {
   evaluateSliceQuality,
   getCompletedMilestones,
   getRemainingMilestones,
+  type SliceMilestone,
 } from '../src/index.ts'
 
 function makePlan(ids: readonly string[]) {
@@ -14,7 +15,7 @@ function makePlan(ids: readonly string[]) {
     id: 'slice-1',
     genre: 'platformer',
     coreExperience: 'Tight jump-and-run through a haunted factory',
-    milestones: ids.map((id) => ({
+    milestones: ids.map(id => ({
       id,
       name: id,
       description: `Milestone ${id}`,
@@ -37,7 +38,7 @@ describe('createVerticalSlicePlan', () => {
     expect(plan.estimatedDurationDays).toBe(14)
     expect(plan.progress).toBe(0)
     expect(plan.milestones).toHaveLength(2)
-    expect(plan.milestones.map((m) => m.complete)).toEqual([false, false])
+    expect(plan.milestones.map(m => m.complete)).toEqual([false, false])
   })
 
   it('does not reuse the caller milestone objects', () => {
@@ -57,9 +58,9 @@ describe('createVerticalSlicePlan', () => {
       platforms: ['pc'],
       estimatedDurationDays: 14,
     })
-    expect(plan.milestones[0] === stub).toBe(false)
+    expect(plan.milestones[0]! === (stub as unknown as SliceMilestone)).toBe(false)
     expect(Object.hasOwn(stub, 'complete')).toBe(false)
-    expect(plan.milestones[0].complete).toBe(false)
+    expect(plan.milestones[0]!.complete).toBe(false)
   })
 
   it('forces every milestone incomplete even when the input already carries a completion flag', () => {
@@ -80,7 +81,7 @@ describe('createVerticalSlicePlan', () => {
       platforms: ['pc'],
       estimatedDurationDays: 14,
     })
-    expect(plan.milestones[0].complete).toBe(false)
+    expect(plan.milestones[0]!.complete).toBe(false)
     expect(plan.progress).toBe(0)
   })
 })
@@ -89,7 +90,7 @@ describe('completeSliceMilestone', () => {
   it('marks one milestone complete and recomputes progress', () => {
     const plan = makePlan(['run', 'jump'])
     const updated = completeSliceMilestone(plan, 'jump')
-    expect(updated.milestones.map((m) => m.complete)).toEqual([false, true])
+    expect(updated.milestones.map(m => m.complete)).toEqual([false, true])
     expect(updated.progress).toBe(0.5)
     expect(updated.id).toBe('slice-1')
     expect(updated.platforms).toEqual(['pc'])
@@ -98,7 +99,7 @@ describe('completeSliceMilestone', () => {
   it('leaves the input plan unchanged', () => {
     const plan = makePlan(['run', 'jump'])
     completeSliceMilestone(plan, 'run')
-    expect(plan.milestones[0].complete).toBe(false)
+    expect(plan.milestones[0]!.complete).toBe(false)
     expect(plan.progress).toBe(0)
   })
 
@@ -108,7 +109,7 @@ describe('completeSliceMilestone', () => {
     expect(one.progress).toBe(0.25)
     const two = completeSliceMilestone(one, 'c')
     expect(two.progress).toBe(0.5)
-    expect(two.milestones.map((m) => m.complete)).toEqual([true, false, true, false])
+    expect(two.milestones.map(m => m.complete)).toEqual([true, false, true, false])
   })
 
   it('reaches full progress when every milestone is completed', () => {
@@ -122,7 +123,7 @@ describe('completeSliceMilestone', () => {
     const plan = makePlan(['run', 'jump'])
     const once = completeSliceMilestone(plan, 'run')
     const twice = completeSliceMilestone(once, 'run')
-    expect(twice.milestones[0].complete).toBe(true)
+    expect(twice.milestones[0]!.complete).toBe(true)
     expect(twice.progress).toBe(once.progress)
   })
 
@@ -158,7 +159,7 @@ describe('canCompleteSliceMilestone', () => {
 describe('getRemainingMilestones', () => {
   it('lists only incomplete milestones in plan order', () => {
     const plan = completeSliceMilestone(makePlan(['a', 'b', 'c']), 'b')
-    expect(getRemainingMilestones(plan).map((m) => m.id)).toEqual(['a', 'c'])
+    expect(getRemainingMilestones(plan).map(m => m.id)).toEqual(['a', 'c'])
   })
 
   it('is empty once every milestone is complete', () => {
@@ -171,7 +172,7 @@ describe('getRemainingMilestones', () => {
 describe('getCompletedMilestones', () => {
   it('lists only completed milestones', () => {
     const plan = completeSliceMilestone(makePlan(['a', 'b', 'c']), 'b')
-    expect(getCompletedMilestones(plan).map((m) => m.id)).toEqual(['b'])
+    expect(getCompletedMilestones(plan).map(m => m.id)).toEqual(['b'])
   })
 
   it('is empty on a fresh plan', () => {
@@ -218,7 +219,7 @@ describe('evaluateSliceQuality', () => {
 describe('DEFAULT_SLICE_MILESTONES', () => {
   it('declares five default milestones with stable ids in order', () => {
     expect(DEFAULT_SLICE_MILESTONES).toHaveLength(5)
-    expect(DEFAULT_SLICE_MILESTONES.map((m) => m.id)).toEqual([
+    expect(DEFAULT_SLICE_MILESTONES.map(m => m.id)).toEqual([
       'core-mechanic',
       'first-level',
       'ui-hud',
@@ -228,7 +229,7 @@ describe('DEFAULT_SLICE_MILESTONES', () => {
   })
 
   it('has no duplicate milestone ids', () => {
-    const ids = DEFAULT_SLICE_MILESTONES.map((m) => m.id)
+    const ids = DEFAULT_SLICE_MILESTONES.map(m => m.id)
     expect(new Set(ids).size).toBe(ids.length)
   })
 
@@ -256,6 +257,6 @@ describe('DEFAULT_SLICE_MILESTONES', () => {
     expect(plan.progress).toBe(0)
     const updated = completeSliceMilestone(plan, 'core-mechanic')
     expect(updated.progress).toBe(0.2)
-    expect(getCompletedMilestones(updated).map((m) => m.id)).toEqual(['core-mechanic'])
+    expect(getCompletedMilestones(updated).map(m => m.id)).toEqual(['core-mechanic'])
   })
 })

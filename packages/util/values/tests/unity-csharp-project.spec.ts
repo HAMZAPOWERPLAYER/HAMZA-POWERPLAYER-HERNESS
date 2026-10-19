@@ -195,8 +195,8 @@ describe('parseUnitySln', () => {
       relativePath: 'GameClient/GameClient.csproj',
       projectGuid: '{11111111-1111-1111-1111-111111111111}',
     })
-    expect(parsed[1].name).toBe('GameServer')
-    expect(parsed[2].name).toBe('SharedLib')
+    expect(parsed[1]!.name).toBe('GameServer')
+    expect(parsed[2]!.name).toBe('SharedLib')
   })
 
   it('parses projects from a postProject GlobalSection', () => {
@@ -209,8 +209,8 @@ describe('parseUnitySln', () => {
     ].join('\n')
     const parsed = parseUnitySln(text)
     expect(parsed).toHaveLength(1)
-    expect(parsed[0].name).toBe('PostProj')
-    expect(parsed[0].projectGuid).toBe('{44444444-4444-4444-4444-444444444444}')
+    expect(parsed[0]!.name).toBe('PostProj')
+    expect(parsed[0]!.projectGuid).toBe('{44444444-4444-4444-4444-444444444444}')
   })
 
   it('returns each project once even when listed twice', () => {
@@ -229,9 +229,9 @@ describe('parseUnitySln', () => {
     ].join('\n')
     const parsed = parseUnitySln(text)
     expect(parsed).toHaveLength(3)
-    expect(parsed[0].name).toBe('Alpha')
-    expect(parsed[1].name).toBe('Mid')
-    expect(parsed[2].name).toBe('Zebra')
+    expect(parsed[0]!.name).toBe('Alpha')
+    expect(parsed[1]!.name).toBe('Mid')
+    expect(parsed[2]!.name).toBe('Zebra')
   })
 
   it('returns an empty array for empty text', () => {

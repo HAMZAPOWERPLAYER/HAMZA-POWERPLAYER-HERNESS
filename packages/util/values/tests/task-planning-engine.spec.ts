@@ -9,6 +9,7 @@ import {
   transitionTaskCompletion,
   transitionTaskLifecycle,
   type CompletionState,
+  type TaskDependency,
   type TaskPlanTask,
 } from '../src/task-planning-engine.ts'
 
@@ -23,7 +24,7 @@ function task(params: {
     description: params.description ?? `task ${params.id}`,
     requirements: [],
     constraints: [],
-    dependencies: params.dependencies ?? [],
+    dependencies: (params.dependencies ?? []) as readonly TaskDependency[],
     tools: [],
     acceptanceCriteria: [],
     verificationCommands: [],
@@ -92,7 +93,7 @@ describe('transitionTaskCompletion', () => {
       tasks: [task({ id: 'a' }), task({ id: 'b', dependencies: [{ dependsOn: 'a' }] })],
     })
     const updated = transitionTaskCompletion(plan, 'a', 'implemented')
-    expect(updated.tasks.find((t) => t.id === 'a')!.completionState).toBe('implemented')
+    expect(updated.tasks.find(t => t.id === 'a')!.completionState).toBe('implemented')
     expect(updated.readyTaskIds).toEqual(['b'])
     expect(updated.blockedTaskIds).toEqual([])
   })
@@ -115,7 +116,7 @@ describe('transitionTaskCompletion', () => {
       tasks: [task({ id: 'a' })],
     })
     transitionTaskCompletion(plan, 'a', 'implemented')
-    expect(plan.tasks[0].completionState).toBe('not-started')
+    expect(plan.tasks[0]!.completionState).toBe('not-started')
   })
 
   it('records an optional note', () => {
@@ -125,7 +126,7 @@ describe('transitionTaskCompletion', () => {
       tasks: [task({ id: 'a' })],
     })
     const updated = transitionTaskCompletion(plan, 'a', 'verification-pending', 'awaiting ci')
-    expect(updated.tasks.find((t) => t.id === 'a')!.note).toBe('awaiting ci')
+    expect(updated.tasks.find(t => t.id === 'a')!.note).toBe('awaiting ci')
   })
 })
 
@@ -137,7 +138,7 @@ describe('transitionTaskLifecycle', () => {
       tasks: [task({ id: 'a' })],
     })
     const updated = transitionTaskLifecycle(plan, 'a', 'planning')
-    expect(updated.tasks.find((t) => t.id === 'a')!.state).toBe('planning')
+    expect(updated.tasks.find(t => t.id === 'a')!.state).toBe('planning')
   })
 
   it('throws on disallowed transition', () => {
@@ -174,15 +175,15 @@ describe('reviseTaskPlan', () => {
     const updated = reviseTaskPlan(implemented, {
       objective: 'new',
       tasks: [
-        { id: 'a', description: 'updated a' },
-        { id: 'b', description: 'new task b' },
+        { id: 'a', description: 'updated a', constraints: [], dependencies: [], tools: [], requirements: [], acceptanceCriteria: [], verificationCommands: [], expectedOutputs: [], risks: [] },
+        { id: 'b', description: 'new task b', constraints: [], dependencies: [], tools: [], requirements: [], acceptanceCriteria: [], verificationCommands: [], expectedOutputs: [], risks: [] },
       ],
     })
     expect(updated.objective).toBe('new')
     expect(updated.tasks).toHaveLength(2)
-    expect(updated.tasks.find((t) => t.id === 'a')!.state).toBe('queued')
-    expect(updated.tasks.find((t) => t.id === 'a')!.completionState).toBe('implemented')
-    expect(updated.tasks.find((t) => t.id === 'b')!.completionState).toBe('not-started')
+    expect(updated.tasks.find(t => t.id === 'a')!.state).toBe('queued')
+    expect(updated.tasks.find(t => t.id === 'a')!.completionState).toBe('implemented')
+    expect(updated.tasks.find(t => t.id === 'b')!.completionState).toBe('not-started')
   })
 
   it('keeps the existing objective when none is supplied', () => {
@@ -191,7 +192,7 @@ describe('reviseTaskPlan', () => {
       objective: 'keep',
       tasks: [task({ id: 'a' })],
     })
-    const updated = reviseTaskPlan(plan, { tasks: [{ id: 'a', description: 'same' }] })
+    const updated = reviseTaskPlan(plan, { tasks: [{ id: 'a', description: 'same', constraints: [], dependencies: [], tools: [], requirements: [], acceptanceCriteria: [], verificationCommands: [], expectedOutputs: [], risks: [] }] })
     expect(updated.objective).toBe('keep')
   })
 })
@@ -220,14 +221,14 @@ describe('getters', () => {
   })
 
   it('getReadyTasks returns ready tasks', () => {
-    expect(getReadyTasks(plan).map((t) => t.id)).toEqual([])
+    expect(getReadyTasks(plan).map(t => t.id)).toEqual([])
   })
 
   it('getBlockedTasks returns blocked tasks', () => {
-    expect(getBlockedTasks(plan).map((t) => t.id)).toEqual(['c'])
+    expect(getBlockedTasks(plan).map(t => t.id)).toEqual(['c'])
   })
 
   it('getVerificationPendingTasks returns verification-pending tasks', () => {
-    expect(getVerificationPendingTasks(plan).map((t) => t.id)).toEqual(['b'])
+    expect(getVerificationPendingTasks(plan).map(t => t.id)).toEqual(['b'])
   })
 })

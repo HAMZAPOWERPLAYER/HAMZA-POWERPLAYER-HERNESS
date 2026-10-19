@@ -59,6 +59,7 @@ import {
   type GameDesignTask,
   type PerformanceSample,
   type QualityCategoryInput,
+  type ScriptLanguage,
   type TestRun,
   type UIState,
 } from '../src/index.ts'
@@ -79,7 +80,7 @@ const PUBSPEC = [
   'dev_dependencies:',
   '  flutter_test:',
   '    sdk: flutter',
-  "  mocktail: ^1.0.0",
+  '  mocktail: ^1.0.0',
 ].join('\n')
 
 const MARKERS = ['pubspec.yaml', 'package.json', 'android/app/src/main/AndroidManifest.xml']
@@ -118,7 +119,7 @@ describe('pubspec reads the Flutter project metadata', () => {
     const pubspec = parsePubspec(PUBSPEC)
     expect(pubspec.name).toBe('flutter_game')
     expect(pubspec.description).toBe('A Flutter game project')
-    expect(pubspec.sdkConstraint).toBe(">=3.0.0 <4.0.0")
+    expect(pubspec.sdkConstraint).toBe('>=3.0.0 <4.0.0')
     expect(pubspec.dependencyCount).toBe(2)
     expect(pubspec.hasFlutterSdkDependency).toBe(true)
   })
@@ -167,7 +168,7 @@ describe('ignore rules filter build outputs before changes are summarized', () =
 
   it('summarizes only the source changes after build outputs are filtered out', () => {
     const rules = parseIgnoreRules(IGNORE_TEXT.split('\n'))
-    const sourceChanges = ALL_CHANGES.filter((change) => !isIgnored(rules, change.path, false))
+    const sourceChanges = ALL_CHANGES.filter(change => !isIgnored(rules, change.path, false))
     const summary = summarizeChanges(sourceChanges)
     expect(summary.added).toEqual(['lib/main.dart', 'test/game_test.dart'])
     expect(summary.modified).toEqual(['lib/game_engine.dart', 'pubspec.yaml'])
@@ -194,7 +195,7 @@ describe('change summary reports what changed', () => {
 
   it('renders the filtered summary in the fixed added, modified, removed, renamed order', () => {
     const rules = parseIgnoreRules(IGNORE_TEXT.split('\n'))
-    const sourceChanges = ALL_CHANGES.filter((change) => !isIgnored(rules, change.path, false))
+    const sourceChanges = ALL_CHANGES.filter(change => !isIgnored(rules, change.path, false))
     const summary = summarizeChanges(sourceChanges)
     expect(formatChangeSummary(summary)).toBe(
       'added: lib/main.dart, test/game_test.dart\nmodified: lib/game_engine.dart, pubspec.yaml',
@@ -378,7 +379,7 @@ describe('design spec becomes a dependency-ordered implementation plan', () => {
     expect(scope.defer).toEqual([])
 
     const tasks = deriveGameDesignTasks(DESIGN_SPEC)
-    expect(tasks.map((task) => task.id)).toEqual([
+    expect(tasks.map(task => task.id)).toEqual([
       'input-setup',
       'camera-controls',
       'capability-implementation',
@@ -388,7 +389,7 @@ describe('design spec becomes a dependency-ordered implementation plan', () => {
       'audio-playback',
       'performance-validation',
     ])
-    expect(tasks.every((task) => task.completionState === 'not-started')).toBe(true)
+    expect(tasks.every(task => task.completionState === 'not-started')).toBe(true)
   })
 
   it('builds a plan whose objective is the scope MVP and whose validation task depends on every earlier task', () => {
@@ -416,16 +417,16 @@ describe('design spec becomes a dependency-ordered implementation plan', () => {
     expect(plan.objective).toBe(scope.mvp)
     expect(plan.tasks).toHaveLength(derived.length + 1)
 
-    const validation = plan.tasks.find((task) => task.id === 'performance-validation')
-    expect(validation?.dependencies.map((dependency) => dependency.dependsOn)).toEqual(
-      derived.slice(0, -1).map((task) => task.id),
+    const validation = plan.tasks.find(task => task.id === 'performance-validation')
+    expect(validation?.dependencies.map(dependency => dependency.dependsOn)).toEqual(
+      derived.slice(0, -1).map(task => task.id),
     )
 
-    const audioTask = plan.tasks.find((task) => task.id === 'audio-playback')
+    const audioTask = plan.tasks.find(task => task.id === 'audio-playback')
     expect(audioTask?.tools).toContain('spatial audio emitter')
     expect(audioTask?.expectedOutputs).toContain('assets/audio/')
 
-    const localized = plan.tasks.find((task) => task.id === 'localization')
+    const localized = plan.tasks.find(task => task.id === 'localization')
     expect(localized?.completionState).toBe('verified')
     expect(plan.completionCounts['verified']).toBe(1)
     expect(plan.completionCounts['not-started']).toBe(derived.length)
@@ -435,7 +436,7 @@ describe('design spec becomes a dependency-ordered implementation plan', () => {
 
 describe('audio catalog carries the design task into playback decisions', () => {
   it('validates the catalog and drives one full playback session with cooldowns, expiry, and mute', () => {
-    const audioTask = deriveGameDesignTasks(DESIGN_SPEC).find((task) => task.id === 'audio-playback')
+    const audioTask = deriveGameDesignTasks(DESIGN_SPEC).find(task => task.id === 'audio-playback')
     expect(audioTask?.affectedAssets).toContain('assets/audio/')
     expect(audioTask?.performanceNotes).toContain('Cap concurrent spatial emitters per frame')
 
@@ -523,17 +524,17 @@ describe('lifecycle audit covers the implementation scripts of the derived audio
   ].join('\n')
 
   it('pairs the teardown subscription and reports the loop-scoped repeat hazard in both scripts', () => {
-    const audioTask = deriveGameDesignTasks(DESIGN_SPEC).find((task) => task.id === 'audio-playback')
+    const audioTask = deriveGameDesignTasks(DESIGN_SPEC).find(task => task.id === 'audio-playback')
     const csharpFile = `${audioTask?.affectedFiles[0] ?? ''}AudioPlayback.cs`
     const gdscriptFile = 'src/audio/AudioHooks.gd'
     expect(csharpFile).toBe('src/audio/AudioPlayback.cs')
 
     const single = auditScriptLifecycle(csharpSource, 'csharp', csharpFile)
-    expect(single.findings.map((finding) => [finding.line, finding.id])).toEqual([
+    expect(single.findings.map(finding => [finding.line, finding.id])).toEqual([
       [13, 'csharp-unpaired-subscription'],
       [13, 'loop-subscription'],
     ])
-    expect(single.findings.every((finding) => finding.severity === 'warning')).toBe(true)
+    expect(single.findings.every(finding => finding.severity === 'warning')).toBe(true)
 
     const batch = auditLifecycleBatch([
       { source: csharpSource, language: 'csharp', fileName: csharpFile },
@@ -541,13 +542,13 @@ describe('lifecycle audit covers the implementation scripts of the derived audio
     ])
     expect(batch.scriptCount).toBe(2)
     expect(batch.counts).toEqual({ info: 0, warning: 4, error: 0 })
-    expect(batch.findings.map((finding) => [finding.file, finding.line, finding.id])).toEqual([
+    expect(batch.findings.map(finding => [finding.file, finding.line, finding.id])).toEqual([
       [csharpFile, 13, 'csharp-unpaired-subscription'],
       [csharpFile, 13, 'loop-subscription'],
       [gdscriptFile, 5, 'gdscript-unpaired-connect'],
       [gdscriptFile, 5, 'loop-subscription'],
     ])
-    expect(() => auditScriptLifecycle(csharpSource, 'python', 'x.py')).toThrow(
+    expect(() => auditScriptLifecycle(csharpSource, 'python' as ScriptLanguage, 'x.py')).toThrow(
       'unsupported language: python',
     )
   })
@@ -599,7 +600,7 @@ describe('measured performance evidence flows into symptom triage', () => {
   it('confirms the update-loop cause from analyzePerformance bottlenecks and compares against the baseline', () => {
     const slowRun = analyzePerformance(SLOW_SAMPLES, 60)
     expect(slowRun.profile.averageFrameTimeMs).toBe(45)
-    expect(slowRun.bottlenecks.map((bottleneck) => bottleneck.type)).toEqual(['cpu', 'cpu'])
+    expect(slowRun.bottlenecks.map(bottleneck => bottleneck.type)).toEqual(['cpu', 'cpu'])
 
     const fixedRun = analyzePerformance(FIXED_SAMPLES, 60)
     expect(fixedRun.bottlenecks).toEqual([])
@@ -620,13 +621,13 @@ describe('measured performance evidence flows into symptom triage', () => {
     expect(top?.confirmingEvidence[0]).toMatch('Average frame time 45.00ms')
     expect(top?.confirmingEvidence).toHaveLength(2)
 
-    const gpuCause = diagnosis.rankedCauses.find((cause) => cause.causeId === 'gpu-bound-rendering')
+    const gpuCause = diagnosis.rankedCauses.find(cause => cause.causeId === 'gpu-bound-rendering')
     expect(gpuCause?.likelihood).toBe('possible')
     expect(gpuCause?.missingEvidence).toContain(
       'GPU bottleneck attribution from analyzePerformance',
     )
 
-    const stepById = new Map(diagnosis.steps.map((step) => [step.id, step]))
+    const stepById = new Map(diagnosis.steps.map(step => [step.id, step]))
     expect(stepById.get('reproduce')?.skipped).toBe(false)
     expect(stepById.get('check-update-loop')?.skipped).toBe(true)
     expect(stepById.get('check-update-loop')?.skipReason).toBe(
@@ -658,7 +659,7 @@ describe('measured performance evidence flows into symptom triage', () => {
       'log finding (shader-compilation): Shader "Terrain" compiled during play',
     )
 
-    const stepById = new Map(diagnosis.steps.map((step) => [step.id, step]))
+    const stepById = new Map(diagnosis.steps.map(step => [step.id, step]))
     expect(stepById.get('inspect-logs')?.skipped).toBe(true)
     expect(stepById.get('shader-asset-import')?.skipped).toBe(true)
     expect(stepById.get('re-run')?.skipped).toBe(false)
@@ -695,7 +696,7 @@ describe('Unity meta GUIDs resolve scene reference findings', () => {
         content: `fileFormatVersion: 2\nguid: ${KNOWN_PREFAB_GUID.toUpperCase()}\n`,
       },
     ])
-    expect(collected.map((entry) => entry.guid)).toEqual([
+    expect(collected.map(entry => entry.guid)).toEqual([
       KNOWN_PREFAB_GUID,
       KNOWN_SCRIPT_GUID,
     ])
@@ -723,18 +724,18 @@ describe('Unity meta GUIDs resolve scene reference findings', () => {
           ].join('\n'),
         },
       ],
-      collected.map((entry) => entry.guid),
+      collected.map(entry => entry.guid),
       observedPaths,
     )
 
-    expect(result.findings.map((finding) => [finding.category, finding.file, finding.line])).toEqual([
+    expect(result.findings.map(finding => [finding.category, finding.file, finding.line])).toEqual([
       ['broken-path', 'Assets/Scenes/Broken.unity', 3],
       ['unresolved-guid', 'Assets/Scenes/Level.unity', 5],
     ])
     expect(result.hasErrors).toBe(true)
     expect(result.hasWarnings).toBe(true)
     expect(
-      result.findings.some((finding) => finding.message.includes(KNOWN_SCRIPT_GUID)),
+      result.findings.some(finding => finding.message.includes(KNOWN_SCRIPT_GUID)),
     ).toBe(false)
   })
 })
@@ -771,7 +772,7 @@ describe('parsed Godot scenes validate against the observed project files', () =
     )
 
     const result = validateGodotSceneIntegrity(scene, GODOT_FILES)
-    expect(result.findings.map((finding) => [finding.severity, finding.category])).toEqual([
+    expect(result.findings.map(finding => [finding.severity, finding.category])).toEqual([
       ['error', 'resource'],
       ['error', 'connection'],
     ])
@@ -811,7 +812,7 @@ describe('UI screens stay in sync with milestone progression', () => {
       errorMessage: null,
     }
     const issues = validateUiGameSync(contradictoryUi, progression)
-    expect(issues.map((issue) => issue.code)).toEqual([
+    expect(issues.map(issue => issue.code)).toEqual([
       'victory-without-win',
       'main-menu-during-active-run',
     ])
@@ -822,7 +823,7 @@ describe('UI screens stay in sync with milestone progression', () => {
   it('follows the screen transitions into a missed victory warning and then a synced state', () => {
     const hudUi = showScreen(hideScreen(DEFAULT_UI_STATE, 'main-menu').state, 'hud', false, true)
       .state
-    expect(hudUi.screens.some((screen) => screen.id === 'hud' && screen.visible)).toBe(true)
+    expect(hudUi.screens.some(screen => screen.id === 'hud' && screen.visible)).toBe(true)
 
     const pending = canCompleteMilestone(progression, 'level-1')
     expect(pending.canComplete).toBe(false)
@@ -835,7 +836,7 @@ describe('UI screens stay in sync with milestone progression', () => {
     expect(completed.milestones[0]?.complete).toBe(true)
 
     const missedVictory = validateUiGameSync(hudUi, completed)
-    expect(missedVictory.map((issue) => issue.code)).toEqual(['win-without-victory-screen'])
+    expect(missedVictory.map(issue => issue.code)).toEqual(['win-without-victory-screen'])
 
     const victoryUi = showScreen(hudUi, 'victory', false, false).state
     expect(validateUiGameSync(victoryUi, completed)).toEqual([])
@@ -891,7 +892,7 @@ const DESIGN_SPEC_WITH_PUZZLES = createGameDesignSpec({
 describe('puzzle design reachability reports every soft-lock class', () => {
   it('derives the puzzle ids from the design interactions and finds each deadlock pattern', () => {
     const interactionTask = deriveGameDesignTasks(DESIGN_SPEC_WITH_PUZZLES)
-      .find((task) => task.id === 'interaction-wiring')
+      .find(task => task.id === 'interaction-wiring')
     expect(interactionTask?.description).toContain('door-blue, vault, ice-lock, moon-lock')
 
     const report = analyzeSoftLocks({
@@ -921,16 +922,16 @@ describe('puzzle design reachability reports every soft-lock class', () => {
 
     expect(report.reachableItems).toEqual(['key-blue', 'key-red', 'crown'])
     expect(report.hasCritical).toBe(true)
-    expect(report.findings.map((finding) => finding.code)).toEqual([
+    expect(report.findings.map(finding => finding.code)).toEqual([
       'unreachable-milestone-item',
       'puzzle-unreachable-item',
       'mutual-deadlock',
       'unknown-puzzle-reference',
     ])
-    const deadlock = report.findings.find((finding) => finding.code === 'mutual-deadlock')
+    const deadlock = report.findings.find(finding => finding.code === 'mutual-deadlock')
     expect(deadlock?.subject).toBe('ice-lock & moon-lock')
     const unknownPuzzle = report.findings.find(
-      (finding) => finding.code === 'unknown-puzzle-reference',
+      finding => finding.code === 'unknown-puzzle-reference',
     )
     expect(unknownPuzzle?.message).toContain('ghost-puzzle')
   })
@@ -981,14 +982,14 @@ describe('multi-agent coordination state gates integration approval', () => {
     )
     expect(blocked.approved).toBe(false)
     expect(blocked.summary).toBe('integration not approved: 5 findings')
-    expect(blocked.findings.map((finding) => finding.id)).toEqual([
+    expect(blocked.findings.map(finding => finding.id)).toEqual([
       'changed-file-ownership-conflict',
       'changed-file-owner-out-of-scope',
       'changed-file-unowned',
       'tests-failed',
       'unresolved-disagreement',
     ])
-    expect(blocked.findings.map((finding) => finding.severity)).toEqual([
+    expect(blocked.findings.map(finding => finding.severity)).toEqual([
       'error',
       'error',
       'warning',
@@ -1019,7 +1020,7 @@ describe('quality gate consumes the security and coverage audit adapters', () =>
     ])
     const securityCategory = securityAuditChecks(securityResults)
     expect(securityCategory).toHaveLength(10)
-    expect(securityCategory.filter((check) => check.status === 'fail')).toHaveLength(2)
+    expect(securityCategory.filter(check => check.status === 'fail')).toHaveLength(2)
 
     const coverage = evaluateCoverageGate(
       [
@@ -1061,7 +1062,7 @@ describe('quality gate consumes the security and coverage audit adapters', () =>
     ])
 
     expect(gate.overallStatus).toBe('fail')
-    expect(gate.results.map((result) => [result.category, result.status])).toEqual([
+    expect(gate.results.map(result => [result.category, result.status])).toEqual([
       ['architecture', 'pass'],
       ['correctness', 'pass'],
       ['security', 'fail'],
@@ -1069,7 +1070,7 @@ describe('quality gate consumes the security and coverage audit adapters', () =>
       ['performance', 'pass'],
       ['maintainability', 'pass'],
     ])
-    expect(gate.failures.map((finding) => finding.checkId)).toEqual([
+    expect(gate.failures.map(finding => finding.checkId)).toEqual([
       'security-audit/path-traversal',
       'security-audit/symlink-escape',
       'test-coverage/gate',
@@ -1082,7 +1083,7 @@ describe('quality gate consumes the security and coverage audit adapters', () =>
     const cleanSecurity = runSecurityAudit([
       { name: 'level-path', value: 'Assets/Scenes/Level.unity' },
     ])
-    expect(cleanSecurity.every((result) => result.passed)).toBe(true)
+    expect(cleanSecurity.every(result => result.passed)).toBe(true)
 
     const passingCoverage = evaluateCoverageGate(
       [
@@ -1116,7 +1117,7 @@ describe('quality gate consumes the security and coverage audit adapters', () =>
     const untouched = evaluateGameQualityGate(QUALITY_GATE_CHECKLIST)
     expect(untouched.overallStatus).toBe('blocked')
     expect(untouched.results).toHaveLength(6)
-    expect(untouched.results.every((result) => result.status === 'blocked')).toBe(true)
+    expect(untouched.results.every(result => result.status === 'blocked')).toBe(true)
     expect(untouched.notRun).toHaveLength(24)
   })
 })

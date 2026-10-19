@@ -6,12 +6,9 @@ import {
   stageEdits,
   validateEdit,
   validateEdits,
-  type EditValidationResult,
-  type FileChange,
   type FileEdit,
-  type ObservedFile,
-  type PendingEdit,
 } from '../src/multi-file-edit.ts'
+import type { ObservedFile } from '../src/codebase-understanding.ts'
 
 function observed(path: string, content: string | null = 'content'): ObservedFile {
   return { path, content }
@@ -35,7 +32,7 @@ describe('validateEdit', () => {
     )
     expect(result.valid).toEqual([])
     expect(result.invalid).toHaveLength(1)
-    expect(result.invalid[0].reason).toContain('does not match expected precondition')
+    expect(result.invalid[0]!.reason).toContain('does not match expected precondition')
     expect(result.allValid).toBe(false)
   })
 
@@ -45,7 +42,7 @@ describe('validateEdit', () => {
       [observed('a.ts', 'old')],
     )
     expect(result.valid).toEqual([])
-    expect(result.invalid[0].reason).toContain('creation is not allowed')
+    expect(result.invalid[0]!.reason).toContain('creation is not allowed')
     expect(result.allValid).toBe(false)
   })
 
@@ -128,12 +125,16 @@ describe('applyEdits', () => {
   })
 
   it('creates new files when a pending edit has create=true', () => {
-    const transaction: { readonly edits: readonly { readonly path: string; readonly newContent: string; readonly create: boolean }[]; readonly allValid: boolean } = {
+    type PendingTxn = {
+      readonly edits: readonly { readonly path: string; readonly newContent: string; readonly create: boolean }[]
+      readonly allValid: boolean
+    }
+    const transaction: PendingTxn = {
       edits: [{ path: 'c.ts', newContent: 'new', create: true }],
       allValid: true,
     }
     const result = applyEdits(transaction, [observed('a.ts', 'old')])
-    expect(result.map((f) => ({ path: f.path, content: f.content }))).toEqual([
+    expect(result.map(f => ({ path: f.path, content: f.content }))).toEqual([
       { path: 'a.ts', content: 'old' },
       { path: 'c.ts', content: 'new' },
     ])
@@ -145,7 +146,7 @@ describe('computeChangeImpact', () => {
     const before = [observed('a.ts', 'old'), observed('b.ts', 'same'), observed('c.ts', 'gone')]
     const after = [observed('a.ts', 'new'), observed('b.ts', 'same'), observed('d.ts', 'new')]
     const changes = computeChangeImpact(before, after)
-    const byPath = new Map(changes.map((c) => [c.path, c]))
+    const byPath = new Map(changes.map(c => [c.path, c]))
     expect(byPath.get('a.ts')!.kind).toBe('modified')
     expect(byPath.get('b.ts')).toBeUndefined()
     expect(byPath.get('c.ts')!.kind).toBe('removed')

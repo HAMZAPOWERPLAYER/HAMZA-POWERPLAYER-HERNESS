@@ -11,7 +11,6 @@ import {
   updateRequirementStatus,
   type ClaimEvaluation,
   type RequirementStatus,
-  type RequirementTrace,
 } from '../src/requirement-trace.ts'
 
 const claim = (claimId: string, state: 'verified' | 'partially-verified' | 'unverified' | 'failed'): ClaimEvaluation => ({

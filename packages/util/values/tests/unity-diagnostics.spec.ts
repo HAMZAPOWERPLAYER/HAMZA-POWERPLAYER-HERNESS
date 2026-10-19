@@ -27,7 +27,7 @@ describe('diagnoseUnityProject', () => {
       message: 'ProjectSettings/ProjectVersion.txt not found; Unity project may be incomplete.',
       file: null,
     })
-    expect(result.findings[0].suggestion).toContain('ProjectSettings/ProjectVersion.txt')
+    expect(result.findings[0]!.suggestion).toContain('ProjectSettings/ProjectVersion.txt')
     expect(result.hasErrors).toBe(true)
     expect(result.hasWarnings).toBe(false)
   })
@@ -105,7 +105,7 @@ describe('diagnoseUnityProject', () => {
       { path: 'Assets/Main.unity', content: '' },
     ])
     expect(result.findings).toHaveLength(3)
-    expect(result.findings.map((f) => f.severity)).toEqual(['error', 'error', 'error'])
+    expect(result.findings.map(f => f.severity)).toEqual(['error', 'error', 'error'])
     expect(result.findings[0]).toMatchObject({
       category: 'build',
       message: 'C# project file Assembly-CSharp.csproj could not be read.',
@@ -162,8 +162,8 @@ describe('diagnoseUnityProject', () => {
 
   it('orders findings as project, dependencies, then scenes for an empty input', () => {
     const result = diagnoseUnityProject([])
-    expect(result.findings.map((f) => f.severity)).toEqual(['error', 'warning', 'info'])
-    expect(result.findings.map((f) => f.category)).toEqual(['project', 'dependencies', 'scenes'])
+    expect(result.findings.map(f => f.severity)).toEqual(['error', 'warning', 'info'])
+    expect(result.findings.map(f => f.category)).toEqual(['project', 'dependencies', 'scenes'])
     expect(result.hasErrors).toBe(true)
     expect(result.hasWarnings).toBe(true)
   })

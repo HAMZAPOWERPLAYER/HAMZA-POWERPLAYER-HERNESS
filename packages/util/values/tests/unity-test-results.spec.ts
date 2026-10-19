@@ -73,33 +73,33 @@ describe('parseFailedTests', () => {
     ].join('\n')
     const f = parseFailedTests(xml)
     expect(f).toHaveLength(1)
-    expect(f[0].name).toBe('A')
-    expect(f[0].fullname).toBe('N.A')
-    expect(f[0].message).toBe('boom')
+    expect(f[0]!.name).toBe('A')
+    expect(f[0]!.fullname).toBe('N.A')
+    expect(f[0]!.message).toBe('boom')
   })
 
   it('extracts plain messages', () => {
     const xml = '<test-case name="A" result="Failed"><message>plain</message></test-case>'
     const f = parseFailedTests(xml)
-    expect(f[0].message).toBe('plain')
+    expect(f[0]!.message).toBe('plain')
   })
 
   it('trims and strips a single leading/trailing newline from messages', () => {
     const xml = '<test-case name="A" result="Failed"><message>\nline1\nline2\n</message></test-case>'
     const f = parseFailedTests(xml)
-    expect(f[0].message).toBe('line1\nline2')
+    expect(f[0]!.message).toBe('line1\nline2')
   })
 
   it('returns null message when none is present', () => {
     const xml = '<test-case name="A" result="Failed"></test-case>'
     const f = parseFailedTests(xml)
-    expect(f[0].message).toBeNull()
+    expect(f[0]!.message).toBeNull()
   })
 
   it('omits fullname when absent', () => {
     const xml = '<test-case name="A" result="Failed"></test-case>'
     const f = parseFailedTests(xml)
-    expect(f[0].fullname).toBeNull()
+    expect(f[0]!.fullname).toBeNull()
   })
 
   it('preserves document order and de-duplicates', () => {
@@ -110,8 +110,8 @@ describe('parseFailedTests', () => {
     ].join('')
     const f = parseFailedTests(xml)
     expect(f).toHaveLength(2)
-    expect(f[0].name).toBe('A')
-    expect(f[1].name).toBe('B')
+    expect(f[0]!.name).toBe('A')
+    expect(f[1]!.name).toBe('B')
   })
 
   it('ignores non-failed test cases', () => {

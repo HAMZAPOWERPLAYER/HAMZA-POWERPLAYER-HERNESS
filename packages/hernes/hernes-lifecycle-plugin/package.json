@@ -1,0 +1,19 @@
+{
+  "name": "@deepseek-ai/dsh-hernes-lifecycle-plugin",
+  "version": "0.1.0",
+  "description": "HERNES lifecycle plugin: wires task lifecycle into Cordis session events (turn/start, turn/end, step/start, step/end) through documented extension points.",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "workspace:~"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-util-values": "workspace:*"
+  },
+  "license": "MIT"
+}

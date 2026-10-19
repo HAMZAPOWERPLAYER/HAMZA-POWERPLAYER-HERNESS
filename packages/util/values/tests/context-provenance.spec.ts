@@ -28,7 +28,7 @@ describe('detectStaleContext', () => {
   })
 
   it('returns null when no source version was recorded', () => {
-    const noVersion: ContextProvenance = { ...baseProvenance, sourceVersion: undefined }
+    const { sourceVersion: _sv, ...noVersion } = baseProvenance
     expect(detectStaleContext(noVersion, 'anything')).toBeNull()
   })
 })
@@ -67,8 +67,6 @@ describe('formatProvenance', () => {
   it('omits optional parts when absent', () => {
     const minimal: ContextProvenance = {
       source: 'file.md',
-      range: undefined,
-      sourceVersion: undefined,
       retrievalMethod: 'user-provided',
       observationKind: 'observed',
       retrievedAt: 1,

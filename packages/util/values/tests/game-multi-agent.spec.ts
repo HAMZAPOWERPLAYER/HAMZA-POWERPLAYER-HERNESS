@@ -21,7 +21,7 @@ function makeAgent(
     agentId,
     role: 'gameplay-programmer',
     taskIds,
-    status,
+    ...(status !== undefined ? { status } : {}),
     currentTask: null,
   })
 }

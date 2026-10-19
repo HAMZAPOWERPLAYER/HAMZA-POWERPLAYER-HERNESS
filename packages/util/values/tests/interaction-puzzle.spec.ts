@@ -229,12 +229,12 @@ describe('completeMilestone', () => {
   it('marks the milestone complete and records its objective', () => {
     const s0 = makeProgression([MILESTONE_ONE], ['o1'])
     const s1 = completeMilestone(s0, 'm1')
-    expect(s1.milestones[0].complete).toBe(true)
+    expect(s1.milestones[0]!.complete).toBe(true)
     expect(s1.completedObjectives).toContain('m1')
     expect(s1.completedObjectives).toHaveLength(2)
     expect(s1.currentLevel).toBe('chapter-1')
     expect(s1.playTime).toBe(120)
-    expect(s0.milestones[0].complete).toBe(false)
+    expect(s0.milestones[0]!.complete).toBe(false)
     expect(s0.completedObjectives).toHaveLength(1)
   })
 
@@ -242,15 +242,15 @@ describe('completeMilestone', () => {
     const s0 = makeProgression([MILESTONE_ONE], ['o1', 'm1'])
     const s1 = completeMilestone(s0, 'm1')
     expect(s1.completedObjectives).toHaveLength(2)
-    expect(s1.milestones[0].complete).toBe(true)
+    expect(s1.milestones[0]!.complete).toBe(true)
   })
 
   it('leaves other milestones untouched', () => {
     const s0 = makeProgression([MILESTONE_ONE, MILESTONE_TWO], ['m1'])
     const s1 = completeMilestone(s0, 'm2')
     expect(s1.milestones[0]).toEqual(MILESTONE_ONE)
-    expect(s1.milestones[1].complete).toBe(true)
-    expect(s1.milestones[0].complete).toBe(false)
+    expect(s1.milestones[1]!.complete).toBe(true)
+    expect(s1.milestones[0]!.complete).toBe(false)
   })
 
   it('throws for an unknown milestone', () => {
@@ -262,7 +262,7 @@ describe('completeMilestone', () => {
   it('throws when required objectives are missing and leaves the state unchanged', () => {
     const s0 = makeProgression([MILESTONE_ONE], [])
     expect(() => completeMilestone(s0, 'm1')).toThrow(/^missing objectives: o1$/)
-    expect(s0.milestones[0].complete).toBe(false)
+    expect(s0.milestones[0]!.complete).toBe(false)
     expect(s0.completedObjectives).toEqual([])
   })
 
@@ -270,7 +270,7 @@ describe('completeMilestone', () => {
     const s0 = makeProgression([MILESTONE_ONE], ['o1'])
     const s1 = completeMilestone(s0, 'm1')
     expect(() => completeMilestone(s1, 'm1')).toThrow(/^milestone already complete$/)
-    expect(s1.milestones[0].complete).toBe(true)
+    expect(s1.milestones[0]!.complete).toBe(true)
     expect(s1.completedObjectives).toEqual(['o1', 'm1'])
   })
 
@@ -340,7 +340,7 @@ describe('canCompleteMilestone', () => {
     expect(check.canComplete).toBe(true)
     expect(check.reason).toBeNull()
     const s2 = completeMilestone(s1, 'm2')
-    expect(s2.milestones[1].complete).toBe(true)
+    expect(s2.milestones[1]!.complete).toBe(true)
     expect(s2.completedObjectives).toContain('m2')
     expect(s2.completedObjectives).toHaveLength(3)
   })

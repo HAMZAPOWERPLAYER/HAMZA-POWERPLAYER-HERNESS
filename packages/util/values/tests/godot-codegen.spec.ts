@@ -104,9 +104,9 @@ describe('generateGodotScript', () => {
         task: makeTask({ requiredEngineApis: ['move_and_slide', 'pathfinding service'] }),
         kind: 'player-character',
       })
-      const missing = script.warnings.filter((warning) => warning.includes('pathfinding service'))
+      const missing = script.warnings.filter(warning => warning.includes('pathfinding service'))
       expect(missing).toHaveLength(1)
-      expect(script.warnings.some((warning) => warning.includes('move_and_slide'))).toBe(false)
+      expect(script.warnings.some(warning => warning.includes('move_and_slide'))).toBe(false)
     })
 
     it('covers every task required engine API or names it in the warnings', () => {
@@ -115,7 +115,7 @@ describe('generateGodotScript', () => {
         const script = generateGodotScript({ task, kind })
         for (const api of task.requiredEngineApis) {
           const covered = script.content.toLowerCase().includes(api.toLowerCase())
-          const warned = script.warnings.some((warning) => warning.includes(api))
+          const warned = script.warnings.some(warning => warning.includes(api))
           expect(covered || warned, `${kind} covers or warns about ${api}`).toBe(true)
         }
       }
@@ -131,8 +131,8 @@ describe('generateGodotScript', () => {
     it('warns when the script name is not a valid GDScript identifier', () => {
       const script = generateGodotScript({ kind: 'ui-screen', scriptName: 'pause menu!' })
       expect(script.path).toBe('res://pause menu!.gd')
-      expect(script.warnings.some((warning) => warning.includes('pause menu!'))).toBe(true)
-      expect(script.warnings.some((warning) => warning.includes('not a valid GDScript identifier'))).toBe(true)
+      expect(script.warnings.some(warning => warning.includes('pause menu!'))).toBe(true)
+      expect(script.warnings.some(warning => warning.includes('not a valid GDScript identifier'))).toBe(true)
     })
   })
 
@@ -162,7 +162,7 @@ describe('generateGodotScript', () => {
       expect(script.warnings).toContain(
         'the Godot API calls in this skeleton follow the Godot 3.x convention and must be verified against the target project Godot version before use',
       )
-      expect(script.warnings.some((warning) => warning.includes('godotMajor was not supplied'))).toBe(false)
+      expect(script.warnings.some(warning => warning.includes('godotMajor was not supplied'))).toBe(false)
     })
 
     it('Godot 4.x explicit documents the branch and awaits process_frame in the save manager', () => {
@@ -227,7 +227,7 @@ describe('generateGodotScript', () => {
 
   describe('unknown kind', () => {
     it('throws an unknown script kind error', () => {
-      const unknown = { kind: 'vehicle' } as GenerateGodotScriptParams
+      const unknown = { kind: 'vehicle' } as unknown as GenerateGodotScriptParams
       expect(() => generateGodotScript(unknown)).toThrow(/unknown script kind: vehicle/)
     })
   })

@@ -21,6 +21,8 @@ export interface FileEdit {
   readonly allowCreate: boolean
 }
 
+
+
 /** A validated edit ready to apply. */
 export interface ValidatedEdit {
   /** File path being edited. */
@@ -82,7 +84,7 @@ export function validateEdit(
   edit: FileEdit,
   observed: readonly EditedFile[],
 ): EditValidationResult {
-  const byPath = new Map(observed.map((file) => [file.path, file]))
+  const byPath = new Map(observed.map(file => [file.path, file]))
   const observedFile = byPath.get(edit.path)
   const invalid: EditRejection[] = []
   if (observedFile === undefined) {
@@ -142,10 +144,10 @@ export function stageEdits(
   observed: readonly EditedFile[],
 ): EditTransaction {
   const result = validateEdits(edits, observed)
-  const pending: PendingEdit[] = result.valid.map((edit) => ({
+  const pending: PendingEdit[] = result.valid.map(edit => ({
     path: edit.path,
     newContent: edit.newContent,
-    create: !observed.some((file) => file.path === edit.path && file.content !== null),
+    create: !observed.some(file => file.path === edit.path && file.content !== null),
   }))
   return { edits: pending, allValid: result.allValid }
 }
@@ -159,7 +161,7 @@ export function applyEdits(
   transaction: EditTransaction,
   observed: readonly EditedFile[],
 ): EditedFile[] {
-  const byPath = new Map(observed.map((file) => [file.path, file]))
+  const byPath = new Map(observed.map(file => [file.path, file]))
   for (const edit of transaction.edits) {
     byPath.set(edit.path, { path: edit.path, content: edit.newContent })
   }
@@ -187,7 +189,7 @@ export function computeChangeImpact(
   before: readonly EditedFile[],
   after: readonly EditedFile[],
 ): readonly FileEditChange[] {
-  const afterByPath = new Map(after.map((file) => [file.path, file]))
+  const afterByPath = new Map(after.map(file => [file.path, file]))
   const changes: FileEditChange[] = []
   const seen = new Set<string>()
   for (const file of before) {
@@ -231,7 +233,7 @@ export function findReferencingFiles(
   files: readonly EditedFile[],
 ): readonly string[] {
   return files
-    .filter((file) => file.content !== null && file.content.includes(path))
-    .map((file) => file.path)
+    .filter(file => file.content !== null && file.content.includes(path))
+    .map(file => file.path)
     .sort()
 }

@@ -4,9 +4,7 @@ import {
   findAffectedFiles,
   rankFilesByRelevance,
   type DependencyEdge,
-  type DependencyGraph,
   type ObservedFile,
-  type RankedFile,
 } from '../src/codebase-understanding.ts'
 
 function observed(path: string, content: string | null = 'content'): ObservedFile {
@@ -90,17 +88,17 @@ describe('rankFilesByRelevance', () => {
     ]
     const ranked = rankFilesByRelevance(files, ['login', 'auth'])
     expect(ranked).toHaveLength(2)
-    expect(ranked[0].path).toBe('b.ts')
-    expect(ranked[0].score).toBe(3)
-    expect(ranked[1].path).toBe('a.ts')
-    expect(ranked[1].score).toBe(2)
+    expect(ranked[0]!.path).toBe('b.ts')
+    expect(ranked[0]!.score).toBe(3)
+    expect(ranked[1]!.path).toBe('a.ts')
+    expect(ranked[1]!.score).toBe(2)
   })
 
   it('matches case-insensitively', () => {
     const files = [observed('a.ts', 'Login Token')]
     const ranked = rankFilesByRelevance(files, ['login'])
     expect(ranked).toHaveLength(1)
-    expect(ranked[0].matchedTerms).toEqual(['login'])
+    expect(ranked[0]!.matchedTerms).toEqual(['login'])
   })
 
   it('returns an empty array when nothing matches', () => {
